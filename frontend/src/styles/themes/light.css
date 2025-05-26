@@ -1,0 +1,40 @@
+/* Light Theme */
+:root {
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --accent-color: #4caf50;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+body {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--text-color);
+}
+
+.preferences-container {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 40px var(--shadow-color);
+}
+
+.header-title {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-subtitle {
+  color: #666;
+}
+
+.webix_form_section .webix_form_section_label {
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.theme-preview.theme-light {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: var(--text-color);
+} 
