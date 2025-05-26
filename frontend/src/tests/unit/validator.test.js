@@ -1,3 +1,5 @@
+import Validator from '../../utils/validation';
+
 describe('Validator', () => {
   describe('validateEmail', () => {
     it('should validate correct email addresses', () => {
