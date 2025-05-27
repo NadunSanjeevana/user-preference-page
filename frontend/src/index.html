@@ -3,40 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Preferences - Advanced Settings</title>
+    <title>User Preferences</title>
 
-    <!-- Webix CSS and JS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.webix.com/edge/webix.css" />
-    <script type="text/javascript" src="https://cdn.webix.com/edge/webix.js"></script>
+    <!-- Webix UI -->
+    <link rel="stylesheet" href="https://cdn.webix.com/edge/webix.css" type="text/css" />
+    <script src="https://cdn.webix.com/edge/webix.js" type="text/javascript"></script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="styles/themes/light.css" />
-    <link rel="stylesheet" href="styles/themes/dark.css" />
+    <!-- Custom styles -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+      #preferences-app {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
   </head>
   <body>
-    <div class="preferences-container">
-      <div class="header-section">
-        <h1 class="header-title">User Preferences</h1>
-        <p class="header-subtitle">Customize your experience with advanced settings</p>
-      </div>
-      <div id="preferences-app"></div>
-    </div>
-
-    <!-- Core Scripts -->
-    <script src="config/app.config.js"></script>
-    <script src="utils/validation.js"></script>
-    <script src="utils/error-handling.js"></script>
-    <script src="services/api.js"></script>
-    <script src="services/storage.js"></script>
-
-    <!-- Components -->
-    <script src="components/account-form.js"></script>
-    <script src="components/notification-form.js"></script>
-    <script src="components/theme-form.js"></script>
-    <script src="components/privacy-form.js"></script>
-
-    <!-- Main Application -->
-    <script src="app.js"></script>
+    <div id="preferences-app"></div>
   </body>
 </html> 

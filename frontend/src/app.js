@@ -1,3 +1,9 @@
+import stateManager from './utils/stateManager.js';
+import AccountForm from './components/account-form.js';
+import NotificationForm from './components/notification-form.js';
+import ThemeForm from './components/theme-form.js';
+import PrivacyForm from './components/privacy-form.js';
+
 // Application State Management
 class PreferencesState {
   constructor() {
@@ -53,10 +59,10 @@ class PreferencesState {
 const appState = new PreferencesState();
 
 // Initialize components
-const accountForm = new AccountForm();
-const notificationForm = new NotificationForm();
-const themeForm = new ThemeForm();
-const privacyForm = new PrivacyForm();
+const accountForm = AccountForm();
+const notificationForm = NotificationForm();
+const themeForm = ThemeForm();
+const privacyForm = PrivacyForm();
 
 // Main Layout
 const mainLayout = {
@@ -71,19 +77,19 @@ const mainLayout = {
       cells: [
         {
           header: "Account",
-          body: accountForm.getForm()
+          body: accountForm
         },
         {
           header: "Notifications",
-          body: notificationForm.getForm()
+          body: notificationForm
         },
         {
           header: "Theme",
-          body: themeForm.getForm()
+          body: themeForm
         },
         {
           header: "Privacy",
-          body: privacyForm.getForm()
+          body: privacyForm
         }
       ]
     },
@@ -149,7 +155,70 @@ const mainLayout = {
 
 // Initialize the application
 webix.ready(function() {
-  webix.ui(mainLayout, document.getElementById("preferences-app"));
+  // Load initial data
+  stateManager.loadUserPreferences().catch(error => {
+    console.error('Failed to load preferences:', error);
+  });
+
+  // Create the main layout
+  webix.ui({
+    view: "layout",
+    type: "line",
+    rows: [
+      {
+        view: "toolbar",
+        css: "webix_dark",
+        cols: [
+          { view: "label", label: "User Preferences", css: "webix_header" }
+        ]
+      },
+      {
+        view: "tabview",
+        cells: [
+          {
+            header: "Account",
+            body: AccountForm()
+          },
+          {
+            header: "Notifications",
+            body: NotificationForm()
+          },
+          {
+            header: "Theme",
+            body: ThemeForm()
+          },
+          {
+            header: "Privacy",
+            body: PrivacyForm()
+          }
+        ]
+      }
+    ]
+  }, document.getElementById("preferences-app"));
+
+  // Add loading indicator
+  webix.ui({
+    view: "window",
+    id: "loadingWindow",
+    position: "center",
+    modal: true,
+    head: "Loading",
+    body: {
+      view: "template",
+      template: "Loading preferences...",
+      css: "loading-template"
+    },
+    hidden: true
+  });
+
+  // Subscribe to loading state changes
+  stateManager.subscribe((state) => {
+    const loadingWindow = $$("loadingWindow");
+    if (loadingWindow) {
+      loadingWindow.show(state.loading);
+    }
+  });
+
   loadFormData();
   setupFormHandlers();
   setupKeyboardNavigation();
@@ -275,10 +344,50 @@ function setupKeyboardNavigation() {
 // Enhance accessibility
 function enhanceAccessibility() {
   const tabview = $$("preferencesTabview");
+  if (!tabview) return;
   const tabbarNode = tabview.getTabbar().$view;
   tabbarNode.setAttribute("role", "tablist");
   tabbarNode.setAttribute("aria-label", "User preferences categories");
 }
+
+// Add some basic styles
+webix.ui({
+  view: "template",
+  css: "app-styles",
+  template: `
+    <style>
+      .webix_header {
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .loading-template {
+        padding: 20px;
+        text-align: center;
+      }
+      .theme-preview {
+        padding: 15px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      .theme-light {
+        background: #ffffff;
+        color: #333333;
+        border: 1px solid #dddddd;
+      }
+      .theme-dark {
+        background: #333333;
+        color: #ffffff;
+        border: 1px solid #444444;
+      }
+      .webix_primary {
+        background: #1a73e8;
+      }
+      .webix_danger {
+        background: #dc3545;
+      }
+    </style>
+  `
+});
 
 // Export for testing
 if (typeof module !== 'undefined' && module.exports) {

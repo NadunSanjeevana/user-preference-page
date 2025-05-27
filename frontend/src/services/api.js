@@ -1,18 +1,23 @@
+import ErrorHandler from '../utils/errorHandler.js';
+
 class ApiService {
   constructor() {
-    this.baseUrl = '/api/v1';
+    this.baseUrl = 'http://127.0.0.1:8000/api/v1';  // Update with your backend URL
     this.endpoints = {
       preferences: '/preferences',
-      account: '/account',
-      notifications: '/notifications',
-      theme: '/theme',
-      privacy: '/privacy'
     };
   }
 
   async fetchPreferences() {
     try {
-      const response = await fetch(`${this.baseUrl}${this.endpoints.preferences}`);
+      const response = await fetch(`${this.baseUrl}${this.endpoints.preferences}`, {
+        method: 'GET',
+        credentials: 'include',  // Include credentials
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
       if (!response.ok) throw new Error('Failed to fetch preferences');
       return await response.json();
     } catch (error) {
@@ -25,12 +30,33 @@ class ApiService {
     try {
       const response = await fetch(`${this.baseUrl}${this.endpoints.preferences}`, {
         method: 'PUT',
+        credentials: 'include',  // Include credentials
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(preferences)
       });
       if (!response.ok) throw new Error('Failed to update preferences');
+      return await response.json();
+    } catch (error) {
+      ErrorHandler.handleApiError(error);
+      throw error;
+    }
+  }
+
+  async createPreferences(preferences) {
+    try {
+      const response = await fetch(`${this.baseUrl}${this.endpoints.preferences}`, {
+        method: 'POST',
+        credentials: 'include',  // Include credentials
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(preferences)
+      });
+      if (!response.ok) throw new Error('Failed to create preferences');
       return await response.json();
     } catch (error) {
       ErrorHandler.handleApiError(error);
@@ -107,7 +133,4 @@ class ApiService {
   }
 }
 
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ApiService;
-} 
+export default ApiService; 
