@@ -77,23 +77,6 @@ const mainLayout = {
   type: "line",
   rows: [
     {
-      view: "toolbar",
-      css: "webix_dark",
-      cols: [
-        { view: "label", label: "User Preferences", css: "webix_header" },
-        {},
-        {
-          view: "button",
-          label: "Logout",
-          width: 100,
-          click: function() {
-            authService.clearTokens();
-            $$("mainView").show("login");
-          }
-        }
-      ]
-    },
-    {
       view: "multiview",
       id: "mainView",
       animate: true,
@@ -129,7 +112,7 @@ const mainLayout = {
                         api.login(values.username, values.password)
                           .then(data => {
                             authService.setTokens(data.access, data.refresh);
-                            $$("mainView").show("preferences");
+                            $$("mainView").setValue("preferences");
                             webix.message({ type: "success", text: "Login successful" });
                           })
                           .catch(error => {
@@ -142,10 +125,19 @@ const mainLayout = {
                     },
                     {
                       view: "button",
+                      id: "registerButton",
                       value: "Register",
                       css: "webix_secondary",
+                      type: "button",
                       click: function() {
-                        $$("mainView").show("register");
+                        console.log("Register button clicked");
+                        const mainView = $$("mainView");
+                        if (mainView) {
+                          console.log("Switching to register view");
+                          mainView.setValue("register");
+                        } else {
+                          console.error("mainView not found");
+                        }
                       }
                     }
                   ],
@@ -209,7 +201,7 @@ const mainLayout = {
                           })
                           .then(data => {
                             authService.setTokens(data.access, data.refresh);
-                            $$("mainView").show("preferences");
+                            $$("mainView").setValue("preferences");
                             webix.message({ type: "success", text: "Registration successful" });
                           })
                           .catch(error => {
@@ -225,7 +217,10 @@ const mainLayout = {
                       value: "Back to Login",
                       css: "webix_secondary",
                       click: function() {
-                        $$("mainView").show("login");
+                        const mainView = $$("mainView");
+                        if (mainView) {
+                          mainView.setValue("login");
+                        }
                       }
                     }
                   ],
@@ -244,6 +239,27 @@ const mainLayout = {
         {
           id: "preferences",
           rows: [
+            {
+              view: "toolbar",
+              css: "webix_dark",
+              cols: [
+                { view: "label", label: "User Preferences", css: "webix_header" },
+                {},
+                {
+                  view: "button",
+                  label: "Logout",
+                  width: 100,
+                  click: function() {
+                    authService.clearTokens();
+                    const mainView = $$("mainView");
+                    if (mainView) {
+                      mainView.setValue("login");
+                      webix.message({ type: "success", text: "Logged out successfully" });
+                    }
+                  }
+                }
+              ]
+            },
             {
               view: "tabview",
               id: "preferencesTabview",
@@ -336,8 +352,11 @@ const mainLayout = {
 
 // Initialize the application
 webix.ready(function() {
+  console.log("Webix is ready");
+  
   // Create the main layout
   webix.ui(mainLayout, "preferences-app");
+  console.log("Main layout created");
 
   // Add loading indicator
   webix.ui({
@@ -354,22 +373,26 @@ webix.ready(function() {
     hidden: true
   });
 
+  // Debug multiview
+  const mainView = $$("mainView");
+  console.log("MainView initialized:", mainView);
+
   // Check authentication status and show appropriate view
   if (authService.isAuthenticated()) {
-    $$("mainView").show("preferences");
+    mainView.setValue("preferences");
     loadUserPreferences();
   } else if (authService.hasRefreshToken()) {
     // Try to refresh token
     api.refreshToken()
       .then(() => {
-        $$("mainView").show("preferences");
+        mainView.setValue("preferences");
         loadUserPreferences();
       })
       .catch(() => {
-        $$("mainView").show("login");
+        mainView.setValue("login");
       });
   } else {
-    $$("mainView").show("login");
+    mainView.setValue("login");
   }
 
   // Subscribe to loading state changes
