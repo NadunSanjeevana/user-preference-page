@@ -1,10 +1,76 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.views import APIView
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from .models import UserPreferences
 from .serializers import UserPreferencesSerializer
 from django.shortcuts import get_object_or_404
+
+class RegisterView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        try:
+            # Validate password
+            validate_password(request.data.get('password'))
+            
+            # Create user
+            user = User.objects.create_user(
+                username=request.data.get('username'),
+                email=request.data.get('email'),
+                password=request.data.get('password')
+            )
+            
+            # Create default preferences
+            UserPreferences.objects.create(
+                user=user,
+                account={
+                    'username': user.username,
+                    'email': user.email,
+                    'firstName': '',
+                    'lastName': '',
+                    'phone': ''
+                },
+                notifications={
+                    'emailNotifications': True,
+                    'pushNotifications': True,
+                    'smsNotifications': False,
+                    'frequency': 'daily',
+                    'marketingEmails': False,
+                    'securityAlerts': True
+                },
+                theme={
+                    'colorScheme': 'light',
+                    'fontSize': 'medium',
+                    'layout': 'standard',
+                    'animations': True,
+                    'compactMode': False
+                },
+                privacy={
+                    'profileVisibility': 'friends',
+                    'dataSharing': False,
+                    'analyticsTracking': True,
+                    'locationSharing': False,
+                    'activityStatus': True,
+                    'searchableProfile': True
+                }
+            )
+            
+            return Response({
+                'message': 'User registered successfully'
+            }, status=status.HTTP_201_CREATED)
+            
+        except ValidationError as e:
+            return Response({
+                'detail': list(e.messages)
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                'detail': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 class UserPreferencesViewSet(viewsets.ModelViewSet):
     serializer_class = UserPreferencesSerializer
@@ -36,49 +102,19 @@ class UserPreferencesViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
-class PreferencesViewSet(viewsets.ModelViewSet):
-    serializer_class = UserPreferencesSerializer
-    permission_classes = [permissions.AllowAny]  # Allow unauthenticated access for development
-
-    def get_queryset(self):
-        return UserPreferences.objects.all()
-
-    def perform_create(self, serializer):
-        # For development, create preferences for a default user
-        default_user, _ = User.objects.get_or_create(
-            username='default_user',
-            defaults={
-                'email': 'default@example.com',
-                'is_active': True,
-                'is_staff': True,
-                'is_superuser': True
-            }
-        )
-        serializer.save(user=default_user)
-
     @action(detail=False, methods=['get'])
     def my_preferences(self, request):
-        # For development, return default preferences
-        default_user, _ = User.objects.get_or_create(
-            username='default_user',
-            defaults={
-                'email': 'default@example.com',
-                'is_active': True,
-                'is_staff': True,
-                'is_superuser': True
-            }
-        )
-        
-        preferences = UserPreferences.objects.filter(user=default_user).first()
+        preferences = UserPreferences.objects.filter(user=request.user).first()
         if not preferences:
+            # Create default preferences if they don't exist
             preferences = UserPreferences.objects.create(
-                user=default_user,
+                user=request.user,
                 account={
-                    'username': 'default_user',
-                    'email': 'default@example.com',
-                    'firstName': 'Default',
-                    'lastName': 'User',
-                    'phone': '+1 (555) 123-4567'
+                    'username': request.user.username,
+                    'email': request.user.email,
+                    'firstName': '',
+                    'lastName': '',
+                    'phone': ''
                 },
                 notifications={
                     'emailNotifications': True,

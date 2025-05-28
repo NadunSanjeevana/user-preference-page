@@ -17,12 +17,14 @@ class StateManager {
   // Subscribe to state changes
   subscribe(listener) {
     this.listeners.push(listener);
+    // Immediately notify with current state
+    listener(this.state);
     return () => {
       this.listeners = this.listeners.filter(l => l !== listener);
     };
   }
 
-  // Notify all listeners of state changes
+  // Notify all listeners
   notify() {
     this.listeners.forEach(listener => listener(this.state));
   }
@@ -38,6 +40,19 @@ class StateManager {
     try {
       this.setState({ loading: true, error: null });
       const preferences = await this.apiService.fetchPreferences();
+      
+      if (!preferences) {
+        // If no preferences are returned, use default state
+        this.setState({
+          account: null,
+          notifications: null,
+          theme: null,
+          privacy: null,
+          loading: false
+        });
+        return null;
+      }
+
       this.setState({
         account: preferences.account,
         notifications: preferences.notifications,
@@ -45,8 +60,16 @@ class StateManager {
         privacy: preferences.privacy,
         loading: false
       });
+      return preferences;
     } catch (error) {
-      this.setState({ error: error.message, loading: false });
+      this.setState({ 
+        error: error.message, 
+        loading: false,
+        account: null,
+        notifications: null,
+        theme: null,
+        privacy: null
+      });
       throw error;
     }
   }
