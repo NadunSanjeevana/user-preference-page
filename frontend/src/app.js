@@ -71,188 +71,133 @@ const privacyForm = PrivacyForm();
 const loginForm = Login();
 const registerForm = Register();
 
-// Main Layout
+// Create action buttons component
+const actionButtons = {
+  view: "toolbar",
+  css: "account-buttons",
+  elements: [
+    {
+      view: "button",
+      value: "Save All",
+      css: "webix_primary account-button",
+      click: function() {
+        saveAllPreferences();
+      }
+    },
+    {
+      view: "button", 
+      value: "Reset All",
+      css: "webix_secondary account-button",
+      click: function() {
+        if (confirm("Are you sure you want to reset all preferences to default values?")) {
+          resetAllForms();
+        }
+      }
+    },
+    {
+      view: "button",
+      value: "Change Password", 
+      css: "webix_change-password account-button",
+      click: function() {
+        webix.message("Change password functionality would go here");
+      }
+    }
+  ]
+};
+
+// Main application layout
 const mainLayout = {
-  view: "layout",
-  type: "line",
   rows: [
     {
-      view: "multiview",
-      id: "mainView",
-      animate: true,
-      cells: [
+      cols: [
         {
-          id: "login",
-          rows: [
-            { view: "template", template: "Login", type: "header" },
-            {
-              cols: [
-                {},
-                {
-                  view: "form",
-                  id: "loginForm",
-                  width: 400,
-                  elements: [
-                    { view: "text", label: "Username", name: "username", required: true },
-                    { view: "text", label: "Password", name: "password", type: "password", required: true },
-                    {
-                      view: "button",
-                      value: "Login",
-                      css: "webix_primary",
-                      click: function() {
-                        const form = $$("loginForm");
-                        if (!form.validate()) {
-                          webix.message({ type: "error", text: "Please fill in all required fields" });
-                          return;
-                        }
-
-                        const values = form.getValues();
-                        $$("loadingWindow").show();
-
-                        api.login(values.username, values.password)
-                          .then(data => {
-                            authService.setTokens(data.access, data.refresh);
-                            $$("mainView").setValue("preferences");
-                            webix.message({ type: "success", text: "Login successful" });
-                          })
-                          .catch(error => {
-                            webix.message({ type: "error", text: error.message || "Login failed" });
-                          })
-                          .finally(() => {
-                            $$("loadingWindow").hide();
-                          });
-                      }
-                    },
-                    {
-                      view: "button",
-                      id: "registerButton",
-                      value: "Register",
-                      css: "webix_secondary",
-                      type: "button",
-                      click: function() {
-                        $$("mainView").setValue("register");
-                      }
-                    }
-                  ],
-                  rules: {
-                    username: webix.rules.isNotEmpty,
-                    password: webix.rules.isNotEmpty
+          view: "sidebar",
+          id: "mainSidebar",
+          width: 250,
+          css: "preferences-sidebar",
+          hidden: true, // Initially hidden
+          data: [
+            { id: "account", value: "Account", icon: "wxi-user" },
+            { id: "notifications", value: "Notifications", icon: "wxi-bell" },
+            { id: "theme", value: "Theme", icon: "wxi-palette" },
+            { id: "privacy", value: "Privacy", icon: "wxi-lock" }
+          ],
+          on: {
+            onItemClick: function(id) {
+              const mainView = $$("mainView");
+              if (mainView) {
+                console.log("Switching to view:", id);
+                mainView.setValue(id);
+                // Show action buttons only for authenticated views
+                const actionButtonsView = $$("actionButtons");
+                if (actionButtonsView) {
+                  if (["account", "notifications", "theme", "privacy"].includes(id)) {
+                    actionButtonsView.show();
+                  } else {
+                    actionButtonsView.hide();
                   }
-                },
-                {}
-              ]
-            }
-          ]
-        },
-        {
-          id: "register",
-          rows: [
-            { view: "template", template: "Register", type: "header" },
-            {
-              cols: [
-                {},
-                {
-                  view: "form",
-                  id: "registerForm",
-                  width: 400,
-                  elements: [
-                    { view: "text", label: "Username", name: "username", required: true },
-                    { view: "text", label: "Email", name: "email", required: true },
-                    { view: "text", label: "Password", name: "password", type: "password", required: true },
-                    { view: "text", label: "Confirm Password", name: "confirmPassword", type: "password", required: true },
-                    {
-                      view: "button",
-                      value: "Register",
-                      css: "webix_primary",
-                      click: function() {
-                        const form = $$("registerForm");
-                        if (!form.validate()) {
-                          webix.message({ type: "error", text: "Please fill in all required fields" });
-                          return;
-                        }
-
-                        const values = form.getValues();
-                        if (values.password !== values.confirmPassword) {
-                          webix.message({ type: "error", text: "Passwords do not match" });
-                          return;
-                        }
-
-                        if (values.password.length < 8) {
-                          webix.message({ type: "error", text: "Password must be at least 8 characters long" });
-                          return;
-                        }
-
-                        $$("loadingWindow").show();
-
-                        api.register({
-                          username: values.username,
-                          email: values.email,
-                          password: values.password
-                        })
-                          .then(() => {
-                            return api.login(values.username, values.password);
-                          })
-                          .then(data => {
-                            authService.setTokens(data.access, data.refresh);
-                            $$("mainView").setValue("preferences");
-                            webix.message({ type: "success", text: "Registration successful" });
-                          })
-                          .catch(error => {
-                            webix.message({ type: "error", text: error.message || "Registration failed" });
-                          })
-                          .finally(() => {
-                            $$("loadingWindow").hide();
-                          });
-                      }
-                    },
-                    {
-                      view: "button",
-                      value: "Back to Login",
-                      css: "webix_secondary",
-                      click: function() {
-                        const mainView = $$("mainView");
-                        if (mainView) {
-                          mainView.setValue("login");
-                        }
-                      }
-                    }
-                  ],
-                  rules: {
-                    username: webix.rules.isNotEmpty,
-                    email: webix.rules.isEmail,
-                    password: webix.rules.isNotEmpty,
-                    confirmPassword: webix.rules.isNotEmpty
-                  }
-                },
-                {}
-              ]
-            }
-          ]
-        },
-        {
-          id: "preferences",
-          cols: [
-            {
-              view: "sidebar",
-              width: 250,
-              css: "preferences-sidebar",
-              data: [
-                { id: "account", value: "Account", icon: "wxi-user" },
-                { id: "notifications", value: "Notifications", icon: "wxi-bell" },
-                { id: "theme", value: "Theme", icon: "wxi-palette" },
-                { id: "privacy", value: "Privacy", icon: "wxi-lock" }
-              ],
-              on: {
-                onItemClick: function(id) {
-                  $$("preferencesContent").setValue(id);
                 }
               }
-            },
+            }
+          }
+        },
+        {
+          rows: [
             {
               view: "multiview",
-              id: "preferencesContent",
+              id: "mainView",
               animate: true,
               cells: [
+                {
+                  id: "login",
+                  rows: [
+                    {
+                      view: "toolbar",
+                      css: "webix_dark",
+                      cols: [
+                        { view: "label", label: "Login", css: "webix_header" },
+                        {},
+                        {
+                          view: "button",
+                          label: "Register",
+                          width: 100,
+                          click: function() {
+                            const mainView = $$("mainView");
+                            if (mainView) {
+                              mainView.setValue("register");
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    loginForm
+                  ]
+                },
+                {
+                  id: "register", 
+                  rows: [
+                    {
+                      view: "toolbar",
+                      css: "webix_dark",
+                      cols: [
+                        { view: "label", label: "Register", css: "webix_header" },
+                        {},
+                        {
+                          view: "button",
+                          label: "Login",
+                          width: 100,
+                          click: function() {
+                            const mainView = $$("mainView");
+                            if (mainView) {
+                              mainView.setValue("login");
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    registerForm
+                  ]
+                },
                 {
                   id: "account",
                   rows: [
@@ -268,26 +213,47 @@ const mainLayout = {
                           width: 100,
                           click: function() {
                             authService.clearTokens();
-                            $$("mainView").setValue("login");
+                            const mainView = $$("mainView");
+                            const sidebar = $$("mainSidebar");
+                            const actionButtonsView = $$("actionButtons");
+                            
+                            if (mainView) {
+                              mainView.setValue("login");
+                            }
+                            if (sidebar) {
+                              sidebar.unselectAll();
+                              sidebar.hide(); // Hide sidebar on logout
+                            }
+                            if (actionButtonsView) {
+                              actionButtonsView.hide();
+                            }
                             webix.message({ type: "success", text: "Logged out successfully" });
                           }
                         }
                       ]
                     },
-                    accountForm
+                    {
+                      view: "scrollview",
+                      css: "preferences-main-scroll",
+                      body: accountForm
+                    }
                   ]
                 },
                 {
                   id: "notifications",
                   rows: [
                     {
-                      view: "toolbar",
+                      view: "toolbar", 
                       css: "webix_dark",
                       cols: [
                         { view: "label", label: "Notification Settings", css: "webix_header" }
                       ]
                     },
-                    notificationForm
+                    {
+                      view: "scrollview",
+                      css: "preferences-main-scroll",
+                      body: notificationForm
+                    }
                   ]
                 },
                 {
@@ -295,12 +261,16 @@ const mainLayout = {
                   rows: [
                     {
                       view: "toolbar",
-                      css: "webix_dark",
+                      css: "webix_dark", 
                       cols: [
                         { view: "label", label: "Theme Settings", css: "webix_header" }
                       ]
                     },
-                    themeForm
+                    {
+                      view: "scrollview",
+                      css: "preferences-main-scroll",
+                      body: themeForm
+                    }
                   ]
                 },
                 {
@@ -313,25 +283,95 @@ const mainLayout = {
                         { view: "label", label: "Privacy Settings", css: "webix_header" }
                       ]
                     },
-                    privacyForm
+                    {
+                      view: "scrollview", 
+                      css: "preferences-main-scroll",
+                      body: privacyForm
+                    }
                   ]
+                }
+              ]
+            },
+            {
+              view: "toolbar",
+              id: "actionButtons",
+              css: "account-buttons",
+              hidden: true,
+              elements: [
+                {
+                  view: "button",
+                  value: "Save All",
+                  css: "webix_primary account-button",
+                  click: function() {
+                    saveAllPreferences();
+                  }
+                },
+                {
+                  view: "button",
+                  value: "Reset All", 
+                  css: "webix_secondary account-button",
+                  click: function() {
+                    if (confirm("Are you sure you want to reset all preferences to default values?")) {
+                      resetAllForms();
+                    }
+                  }
+                },
+                {
+                  view: "button",
+                  value: "Change Password",
+                  css: "webix_change-password account-button", 
+                  click: function() {
+                    webix.message("Change password functionality would go here");
+                  }
                 }
               ]
             }
           ]
         }
       ]
-    }
+    },
   ]
 };
+
+// Helper function to show authenticated view
+function showAuthenticatedView(viewName = "account") {
+  const mainView = $$("mainView");
+  const sidebar = $$("mainSidebar");
+  const actionButtonsView = $$("actionButtons");
+  
+  if (mainView) {
+    mainView.setValue(viewName);
+  }
+  if (sidebar) {
+    sidebar.show(); // Show sidebar for authenticated users
+    sidebar.select(viewName);
+  }
+  if (actionButtonsView) {
+    actionButtonsView.show();
+  }
+}
+
+// Helper function to show unauthenticated view
+function showUnauthenticatedView(viewName = "login") {
+  const mainView = $$("mainView");
+  const sidebar = $$("mainSidebar");
+  const actionButtonsView = $$("actionButtons");
+  
+  if (mainView) {
+    mainView.setValue(viewName);
+  }
+  if (sidebar) {
+    sidebar.hide(); // Hide sidebar for unauthenticated users
+    sidebar.unselectAll();
+  }
+  if (actionButtonsView) {
+    actionButtonsView.hide();
+  }
+}
 
 // Initialize the application
 webix.ready(function() {
   console.log("Webix is ready");
-  
-  // Create the main layout
-  webix.ui(mainLayout, "preferences-app");
-  console.log("Main layout created");
 
   // Add loading indicator
   webix.ui({
@@ -348,43 +388,57 @@ webix.ready(function() {
     hidden: true
   });
 
-  // Debug multiview
-  const mainView = $$("mainView");
-  console.log("MainView initialized:", mainView);
+  // Create the main layout
+  webix.ui(mainLayout, "preferences-app");
+  console.log("Main layout created");
 
-  // Check authentication status and show appropriate view
-  if (authService.isAuthenticated()) {
-    mainView.setValue("preferences");
-    loadUserPreferences();
-  } else if (authService.hasRefreshToken()) {
-    // Try to refresh token
-    api.refreshToken()
-      .then(() => {
-        mainView.setValue("preferences");
-        loadUserPreferences();
-      })
-      .catch(() => {
-        mainView.setValue("login");
-      });
-  } else {
-    mainView.setValue("login");
-  }
-
-  // Subscribe to loading state changes
-  stateManager.subscribe((state) => {
-    const loadingWindow = $$("loadingWindow");
-    if (loadingWindow) {
-      if (state.loading) {
-        loadingWindow.show();
-      } else {
-        loadingWindow.hide();
-      }
+  // Wait a bit for components to initialize
+  setTimeout(() => {
+    // Check authentication status and show appropriate view
+    const mainView = $$("mainView");
+    
+    if (!mainView) {
+      console.error("MainView not found after initialization");
+      return;
     }
-  });
 
-  setupFormHandlers();
-  setupKeyboardNavigation();
-  enhanceAccessibility();
+    console.log("MainView initialized:", mainView);
+
+    if (authService.isAuthenticated()) {
+      showAuthenticatedView("account");
+      loadUserPreferences();
+    } else if (authService.hasRefreshToken()) {
+      // Try to refresh token
+      api.refreshToken()
+        .then(() => {
+          showAuthenticatedView("account");
+          loadUserPreferences();
+        })
+        .catch(() => {
+          showUnauthenticatedView("login");
+        });
+    } else {
+      showUnauthenticatedView("login");
+    }
+
+    // Subscribe to loading state changes
+    stateManager.subscribe((state) => {
+      const loadingWindow = $$("loadingWindow");
+      if (loadingWindow) {
+        if (state.loading) {
+          loadingWindow.show();
+        } else {
+          loadingWindow.hide();
+        }
+      }
+    });
+
+    // Setup after everything is initialized
+    setupFormHandlers();
+    setupKeyboardNavigation();
+    enhanceAccessibility();
+
+  }, 500); // Increased timeout to ensure components are ready
 });
 
 // Load user preferences
@@ -412,27 +466,59 @@ function loadUserPreferences() {
 function setupFormHandlers() {
   const forms = ["accountForm", "notificationForm", "themeForm", "privacyForm"];
   forms.forEach(formId => {
-    $$(formId).attachEvent("onChange", function() {
-      updateStateFromForms();
-    });
+    const form = $$(formId);
+    if (form && form.attachEvent) {
+      form.attachEvent("onChange", function() {
+        updateStateFromForms();
+      });
+    } else {
+      console.warn(`Form ${formId} not found or doesn't support attachEvent`);
+    }
   });
 }
 
 // Load form data from state
 function loadFormData() {
-  $$("accountForm").setValues(appState.data.account);
-  $$("notificationForm").setValues(appState.data.notifications);
-  $$("themeForm").setValues(appState.data.theme);
-  $$("privacyForm").setValues(appState.data.privacy);
+  const accountForm = $$("accountForm");
+  const notificationForm = $$("notificationForm");
+  const themeForm = $$("themeForm");
+  const privacyForm = $$("privacyForm");
+
+  if (accountForm && accountForm.setValues) {
+    accountForm.setValues(appState.data.account);
+  }
+  if (notificationForm && notificationForm.setValues) {
+    notificationForm.setValues(appState.data.notifications);
+  }
+  if (themeForm && themeForm.setValues) {
+    themeForm.setValues(appState.data.theme);
+  }
+  if (privacyForm && privacyForm.setValues) {
+    privacyForm.setValues(appState.data.privacy);
+  }
+  
   updateThemePreview(appState.data.theme.colorScheme);
 }
 
 // Update state from form values
 function updateStateFromForms() {
-  appState.data.account = $$("accountForm").getValues();
-  appState.data.notifications = $$("notificationForm").getValues();
-  appState.data.theme = $$("themeForm").getValues();
-  appState.data.privacy = $$("privacyForm").getValues();
+  const accountForm = $$("accountForm");
+  const notificationForm = $$("notificationForm");
+  const themeForm = $$("themeForm");
+  const privacyForm = $$("privacyForm");
+
+  if (accountForm && accountForm.getValues) {
+    appState.data.account = accountForm.getValues();
+  }
+  if (notificationForm && notificationForm.getValues) {
+    appState.data.notifications = notificationForm.getValues();
+  }
+  if (themeForm && themeForm.getValues) {
+    appState.data.theme = themeForm.getValues();
+  }
+  if (privacyForm && privacyForm.getValues) {
+    appState.data.privacy = privacyForm.getValues();
+  }
 }
 
 // Save all preferences
@@ -441,7 +527,7 @@ function saveAllPreferences() {
   let allValid = true;
 
   forms.forEach(form => {
-    if (!form.validate()) {
+    if (form && form.validate && !form.validate()) {
       allValid = false;
     }
   });
@@ -454,7 +540,10 @@ function saveAllPreferences() {
   updateStateFromForms();
   
   // Show loading state
-  $$("loadingWindow").show();
+  const loadingWindow = $$("loadingWindow");
+  if (loadingWindow) {
+    loadingWindow.show();
+  }
 
   // Save to backend
   stateManager.updatePreferences("all", appState.data)
@@ -472,7 +561,9 @@ function saveAllPreferences() {
       });
     })
     .finally(() => {
-      $$("loadingWindow").hide();
+      if (loadingWindow) {
+        loadingWindow.hide();
+      }
     });
 }
 
@@ -533,34 +624,46 @@ function setupKeyboardNavigation() {
   document.addEventListener("keydown", function(e) {
     if (e.altKey && e.key >= "1" && e.key <= "4") {
       e.preventDefault();
-      const tabIndex = parseInt(e.key) - 1;
-      $$("preferencesTabview")
-        .getTabbar()
-        .setValue($$("preferencesTabview").getTabbar().getFirstId() + tabIndex);
+      const mainView = $$("mainView");
+      const sidebar = $$("mainSidebar");
+      
+      if (mainView && sidebar && !sidebar.isHidden()) { // Only if sidebar is visible
+        const tabIndex = parseInt(e.key) - 1;
+        const items = ["account", "notifications", "theme", "privacy"];
+        if (items[tabIndex]) {
+          mainView.setValue(items[tabIndex]);
+          sidebar.select(items[tabIndex]);
+        }
+      }
     }
 
     if (e.key === "Escape") {
-      document.querySelector(".preferences-container").focus();
+      const container = document.querySelector(".preferences-container");
+      if (container) {
+        container.focus();
+      }
     }
   });
 }
 
 // Enhance accessibility
 function enhanceAccessibility() {
-  const tabview = $$("preferencesTabview");
-  if (!tabview) return;
-  const tabbarNode = tabview.getTabbar().$view;
-  tabbarNode.setAttribute("role", "tablist");
-  tabbarNode.setAttribute("aria-label", "User preferences categories");
+  const sidebar = $$("mainSidebar");
+  if (sidebar && sidebar.$view) {
+    const sidebarNode = sidebar.$view;
+    sidebarNode.setAttribute("role", "navigation");
+    sidebarNode.setAttribute("aria-label", "User preferences categories");
+  }
 }
 
-// Add some basic styles
-webix.ui({
-  view: "template",
-  css: "app-styles",
-  template: `
-    <link rel="stylesheet" href="styles/preferences.css">
-  `
+// Global error handler for Webix components
+webix.attachEvent("onLoadError", function(text, xml, xhttp, obj) {
+  console.error("Webix load error:", text, obj);
+  webix.message({
+    type: "error",
+    text: "Failed to load component data",
+    expire: 5000
+  });
 });
 
 // Export for testing
@@ -570,6 +673,11 @@ if (typeof module !== 'undefined' && module.exports) {
     AccountForm,
     NotificationForm,
     ThemeForm,
-    PrivacyForm
+    PrivacyForm,
+    saveAllPreferences,
+    resetAllForms,
+    loadUserPreferences,
+    showAuthenticatedView,
+    showUnauthenticatedView
   };
-} 
+}

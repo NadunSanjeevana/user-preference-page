@@ -39,14 +39,6 @@ const Login = () => {
             });
         }
       },
-      {
-        view: "button",
-        value: "Register",
-        css: "webix_secondary",
-        click: function() {
-          $$("mainView").show("register");
-        }
-      }
     ],
     rules: {
       username: webix.rules.isNotEmpty,
