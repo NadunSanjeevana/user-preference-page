@@ -1,0 +1,100 @@
+/* Main Styles */
+.webix_header {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.loading-template {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Theme Preview */
+.theme-preview {
+  padding: 15px;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.theme-light {
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #dddddd;
+}
+
+.theme-dark {
+  background: #333333;
+  color: #ffffff;
+  border: 1px solid #444444;
+}
+
+/* Button Styles */
+.webix_primary {
+  background: #254363 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.webix_primary:hover {
+  background: #1e3550 !important;
+}
+
+.webix_change-password {
+  background: #dabd9f !important;
+  color: #333333 !important;
+  border: none !important;
+}
+
+.webix_change-password:hover {
+  background: #c5a88c !important;
+}
+
+.webix_danger {
+  background: #dc3545 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.webix_danger:hover {
+  background: #c82333 !important;
+}
+
+.webix_secondary {
+  background: #f5f5f5 !important;
+  color: #333333 !important;
+  border: none !important;
+}
+
+.webix_secondary:hover {
+  background: #e0e0e0 !important;
+}
+
+/* Sidebar Styles */
+.preferences-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e0e0e0;
+}
+
+.preferences-sidebar .webix_list_item {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.preferences-sidebar .webix_list_item.webix_selected {
+  background: #254363;
+  color: #ffffff;
+}
+
+.preferences-sidebar .webix_list_item:hover {
+  background: #f5f5f5;
+}
+
+.preferences-sidebar .webix_list_item.webix_selected:hover {
+  background: #254363;
+}
+
+/* Dark Theme Header */
+.webix_dark {
+  background: #254363 !important;
+  color: #ffffff !important;
+} 

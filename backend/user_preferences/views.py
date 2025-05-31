@@ -102,7 +102,7 @@ class UserPreferencesViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get', 'put'])
     def my_preferences(self, request):
         preferences = UserPreferences.objects.filter(user=request.user).first()
         if not preferences:
@@ -140,6 +140,12 @@ class UserPreferencesViewSet(viewsets.ModelViewSet):
                     'searchableProfile': True
                 }
             )
+        
+        if request.method == 'PUT':
+            serializer = self.get_serializer(preferences, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
         
         serializer = self.get_serializer(preferences)
         return Response(serializer.data) 

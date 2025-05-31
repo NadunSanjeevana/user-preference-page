@@ -110,7 +110,7 @@ class ApiService {
 
   async updatePreferences(preferences) {
     try {
-      const response = await fetch(`${this.baseUrl}${this.endpoints.preferences}`, {
+      const response = await fetch(`${this.baseUrl}${this.endpoints.myPreferences}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

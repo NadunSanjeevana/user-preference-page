@@ -109,7 +109,7 @@ body {
 
 /* Accessibility */
 .webix_control:focus {
-  outline: 2px solid #667eea !important;
+  outline: 2px solid #254363 !important;
   outline-offset: 2px !important;
 }
 

@@ -130,14 +130,7 @@ const mainLayout = {
                       css: "webix_secondary",
                       type: "button",
                       click: function() {
-                        console.log("Register button clicked");
-                        const mainView = $$("mainView");
-                        if (mainView) {
-                          console.log("Switching to register view");
-                          mainView.setValue("register");
-                        } else {
-                          console.error("mainView not found");
-                        }
+                        $$("mainView").setValue("register");
                       }
                     }
                   ],
@@ -238,108 +231,90 @@ const mainLayout = {
         },
         {
           id: "preferences",
-          rows: [
+          cols: [
             {
-              view: "toolbar",
-              css: "webix_dark",
-              cols: [
-                { view: "label", label: "User Preferences", css: "webix_header" },
-                {},
-                {
-                  view: "button",
-                  label: "Logout",
-                  width: 100,
-                  click: function() {
-                    authService.clearTokens();
-                    const mainView = $$("mainView");
-                    if (mainView) {
-                      mainView.setValue("login");
-                      webix.message({ type: "success", text: "Logged out successfully" });
-                    }
-                  }
+              view: "sidebar",
+              width: 250,
+              css: "preferences-sidebar",
+              data: [
+                { id: "account", value: "Account", icon: "wxi-user" },
+                { id: "notifications", value: "Notifications", icon: "wxi-bell" },
+                { id: "theme", value: "Theme", icon: "wxi-palette" },
+                { id: "privacy", value: "Privacy", icon: "wxi-lock" }
+              ],
+              on: {
+                onItemClick: function(id) {
+                  $$("preferencesContent").setValue(id);
                 }
-              ]
+              }
             },
             {
-              view: "tabview",
-              id: "preferencesTabview",
-              tabbar: {
-                type: "top",
-                height: 50
-              },
+              view: "multiview",
+              id: "preferencesContent",
+              animate: true,
               cells: [
                 {
-                  header: "Account",
-                  body: accountForm
-                },
-                {
-                  header: "Notifications",
-                  body: notificationForm
-                },
-                {
-                  header: "Theme",
-                  body: themeForm
-                },
-                {
-                  header: "Privacy",
-                  body: privacyForm
-                }
-              ]
-            },
-            {
-              height: 60,
-              cols: [
-                {},
-                {
-                  view: "button",
-                  value: "Reset All",
-                  width: 120,
-                  click: function() {
-                    webix.confirm({
-                      title: "Reset Settings",
-                      text: "Reset all settings to default values?",
-                      ok: "Reset",
-                      cancel: "Cancel"
-                    }).then(function(result) {
-                      if (result) {
-                        resetAllForms();
-                        webix.message({ type: "success", text: "All settings have been reset to defaults." });
-                      }
-                    });
-                  }
-                },
-                { width: 20 },
-                {
-                  view: "button",
-                  value: "Cancel",
-                  width: 100,
-                  click: function() {
-                    if (appState.hasChanges()) {
-                      webix.confirm({
-                        title: "Unsaved Changes",
-                        text: "You have unsaved changes. Discard them?",
-                        ok: "Discard",
-                        cancel: "Keep Editing"
-                      }).then(function(result) {
-                        if (result) {
-                          loadFormData();
-                          webix.message({ type: "success", text: "Changes discarded." });
+                  id: "account",
+                  rows: [
+                    {
+                      view: "toolbar",
+                      css: "webix_dark",
+                      cols: [
+                        { view: "label", label: "Account Settings", css: "webix_header" },
+                        {},
+                        {
+                          view: "button",
+                          label: "Logout",
+                          width: 100,
+                          click: function() {
+                            authService.clearTokens();
+                            $$("mainView").setValue("login");
+                            webix.message({ type: "success", text: "Logged out successfully" });
+                          }
                         }
-                      });
-                    } else {
-                      webix.message({ type: "success", text: "No changes to discard." });
-                    }
-                  }
+                      ]
+                    },
+                    accountForm
+                  ]
                 },
-                { width: 20 },
                 {
-                  view: "button",
-                  value: "Save Changes",
-                  css: "webix_primary",
-                  width: 140,
-                  click: function() {
-                    saveAllPreferences();
-                  }
+                  id: "notifications",
+                  rows: [
+                    {
+                      view: "toolbar",
+                      css: "webix_dark",
+                      cols: [
+                        { view: "label", label: "Notification Settings", css: "webix_header" }
+                      ]
+                    },
+                    notificationForm
+                  ]
+                },
+                {
+                  id: "theme",
+                  rows: [
+                    {
+                      view: "toolbar",
+                      css: "webix_dark",
+                      cols: [
+                        { view: "label", label: "Theme Settings", css: "webix_header" }
+                      ]
+                    },
+                    themeForm
+                  ]
+                },
+                {
+                  id: "privacy",
+                  rows: [
+                    {
+                      view: "toolbar",
+                      css: "webix_dark",
+                      cols: [
+                        { view: "label", label: "Privacy Settings", css: "webix_header" }
+                      ]
+                    },
+                    privacyForm
+                  ]
                 }
               ]
             }
@@ -477,9 +452,28 @@ function saveAllPreferences() {
   }
 
   updateStateFromForms();
-  appState.saveChanges();
-  webix.message({ type: "success", text: "Preferences saved successfully!" });
-  applyThemeSettings();
+  
+  // Show loading state
+  $$("loadingWindow").show();
+
+  // Save to backend
+  stateManager.updatePreferences("all", appState.data)
+    .then(() => {
+      appState.saveChanges();
+      webix.message({ type: "success", text: "Preferences saved successfully!" });
+      applyThemeSettings();
+    })
+    .catch(error => {
+      console.error('Failed to save preferences:', error);
+      webix.message({ 
+        type: "error", 
+        text: "Failed to save preferences. Please try again.",
+        expire: 5000
+      });
+    })
+    .finally(() => {
+      $$("loadingWindow").hide();
+    });
 }
 
 // Reset all forms
@@ -565,37 +559,7 @@ webix.ui({
   view: "template",
   css: "app-styles",
   template: `
-    <style>
-      .webix_header {
-        font-size: 18px;
-        font-weight: bold;
-      }
-      .loading-template {
-        padding: 20px;
-        text-align: center;
-      }
-      .theme-preview {
-        padding: 15px;
-        border-radius: 4px;
-        margin: 10px 0;
-      }
-      .theme-light {
-        background: #ffffff;
-        color: #333333;
-        border: 1px solid #dddddd;
-      }
-      .theme-dark {
-        background: #333333;
-        color: #ffffff;
-        border: 1px solid #444444;
-      }
-      .webix_primary {
-        background: #1a73e8;
-      }
-      .webix_danger {
-        background: #dc3545;
-      }
-    </style>
+    <link rel="stylesheet" href="styles/preferences.css">
   `
 });
 
