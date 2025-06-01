@@ -1,28 +1,29 @@
-import stateManager from '../utils/stateManager.js';
+import stateManager from '../../utils/stateManager.js';
 
 const NotificationForm = () => {
   const form = {
     view: "form",
     id: "notificationForm",
+    responsive: true,
     elements: [
       { template: "Notification Settings", type: "section" },
       {
         view: "checkbox",
         name: "emailNotifications",
         label: "Email Notifications",
-        labelWidth: 200
+        responsive: true
       },
       {
         view: "checkbox",
         name: "pushNotifications",
         label: "Push Notifications",
-        labelWidth: 200
+        responsive: true
       },
       {
         view: "checkbox",
         name: "smsNotifications",
         label: "SMS Notifications",
-        labelWidth: 200
+        responsive: true
       },
       {
         view: "richselect",
@@ -35,21 +36,22 @@ const NotificationForm = () => {
           { id: "weekly", value: "Weekly" },
           { id: "never", value: "Never" }
         ],
-        value: "daily"
+        value: "daily",
+        responsive: true
       },
       { template: "Marketing & Security", type: "section" },
       {
         view: "checkbox",
         name: "marketingEmails",
         label: "Marketing Emails",
-        labelWidth: 200
+        responsive: true
       },
       {
         view: "checkbox",
         name: "securityAlerts",
         label: "Security Alerts",
-        labelWidth: 200,
-        value: true
+        value: true,
+        responsive: true
       },
       {
         margin: 20,
@@ -58,6 +60,7 @@ const NotificationForm = () => {
             view: "button",
             value: "Save Changes",
             css: "webix_primary",
+            responsive: true,
             click: async function() {
               const form = $$("notificationForm");
               try {

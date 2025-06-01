@@ -1,9 +1,10 @@
-import stateManager from '../utils/stateManager.js';
+import stateManager from '../../utils/stateManager.js';
 
 const ThemeForm = () => {
   const form = {
     view: "form",
     id: "themeForm",
+    responsive: true,
     elements: [
       { template: "Theme Settings", type: "section" },
       {
@@ -16,6 +17,7 @@ const ThemeForm = () => {
           { id: "auto", value: "Auto" }
         ],
         value: "light",
+        responsive: true,
         on: {
           onChange: function(newValue) {
             updateThemePreview(newValue);
@@ -26,7 +28,8 @@ const ThemeForm = () => {
         view: "template",
         id: "themePreview",
         template: '<div class="theme-preview theme-light">Theme Preview - Light Mode</div>',
-        height: 80
+        height: 80,
+        responsive: true
       },
       {
         view: "richselect",
@@ -38,7 +41,8 @@ const ThemeForm = () => {
           { id: "large", value: "Large" },
           { id: "extra-large", value: "Extra Large" }
         ],
-        value: "medium"
+        value: "medium",
+        responsive: true
       },
       {
         view: "richselect",
@@ -49,20 +53,21 @@ const ThemeForm = () => {
           { id: "compact", value: "Compact" },
           { id: "spacious", value: "Spacious" }
         ],
-        value: "standard"
+        value: "standard",
+        responsive: true
       },
       {
         view: "checkbox",
         name: "animations",
         label: "Enable Animations",
-        labelWidth: 200,
-        value: true
+        value: true,
+        responsive: true
       },
       {
         view: "checkbox",
         name: "compactMode",
         label: "Compact Mode",
-        labelWidth: 200
+        responsive: true
       },
       {
         margin: 20,
@@ -71,6 +76,7 @@ const ThemeForm = () => {
             view: "button",
             value: "Save Changes",
             css: "webix_primary",
+            responsive: true,
             click: async function() {
               const form = $$("themeForm");
               try {

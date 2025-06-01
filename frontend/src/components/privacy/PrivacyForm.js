@@ -1,10 +1,11 @@
-import stateManager from '../utils/stateManager.js';
-import ErrorHandler from '../utils/errorHandler.js';
+import stateManager from '../../utils/stateManager.js';
+import ErrorHandler from '../../utils/errorHandler.js';
 
 const PrivacyForm = () => {
   const form = {
     view: "form",
     id: "privacyForm",
+    responsive: true,
     elements: [
       { template: "Privacy Settings", type: "section" },
       {
@@ -16,40 +17,41 @@ const PrivacyForm = () => {
           { id: "friends", value: "Friends Only" },
           { id: "private", value: "Private" }
         ],
-        value: "friends"
+        value: "friends",
+        responsive: true
       },
       {
         view: "checkbox",
         name: "dataSharing",
         label: "Allow Data Sharing",
-        labelWidth: 200
+        responsive: true
       },
       {
         view: "checkbox",
         name: "analyticsTracking",
         label: "Analytics Tracking",
-        labelWidth: 200,
-        value: true
+        value: true,
+        responsive: true
       },
       {
         view: "checkbox",
         name: "locationSharing",
         label: "Location Sharing",
-        labelWidth: 200
+        responsive: true
       },
       {
         view: "checkbox",
         name: "activityStatus",
         label: "Show Activity Status",
-        labelWidth: 200,
-        value: true
+        value: true,
+        responsive: true
       },
       {
         view: "checkbox",
         name: "searchableProfile",
         label: "Searchable Profile",
-        labelWidth: 200,
-        value: true
+        value: true,
+        responsive: true
       },
       { template: "Data Management", type: "section" },
       {
@@ -59,6 +61,7 @@ const PrivacyForm = () => {
             view: "button",
             value: "Save Changes",
             css: "webix_primary",
+            responsive: true,
             click: async function() {
               const form = $$("privacyForm");
               try {
@@ -75,6 +78,7 @@ const PrivacyForm = () => {
             view: "button",
             value: "Export Data",
             css: "webix_primary",
+            responsive: true,
             click: function() {
               ErrorHandler.showSuccess("Data export initiated. You will receive an email when ready.");
             }
@@ -84,6 +88,7 @@ const PrivacyForm = () => {
             view: "button",
             value: "Clear Data",
             css: "webix_danger",
+            responsive: true,
             click: function() {
               webix.confirm({
                 title: "Clear Data",

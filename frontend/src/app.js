@@ -1,12 +1,13 @@
 import stateManager from './utils/stateManager.js';
-import AccountForm from './components/account-form.js';
-import NotificationForm from './components/notification-form.js';
-import ThemeForm from './components/theme-form.js';
-import PrivacyForm from './components/privacy-form.js';
+import AccountForm from './components/account/AccountForm.js';
+import NotificationForm from './components/notifications/NotificationForm.js';
+import ThemeForm from './components/theme/ThemeForm.js';
+import PrivacyForm from './components/privacy/PrivacyForm.js';
 import Login from './components/auth/Login.js';
 import Register from './components/auth/Register.js';
 import authService from './services/authService.js';
 import ApiService from './services/api.js';
+
 
 // Application State Management
 class PreferencesState {
@@ -68,8 +69,35 @@ const accountForm = AccountForm();
 const notificationForm = NotificationForm();
 const themeForm = ThemeForm();
 const privacyForm = PrivacyForm();
-const loginForm = Login();
-const registerForm = Register();
+
+// Initialize auth forms with callback functions
+const loginForm = Login({
+  onSuccess: function() {
+    console.log("Login successful, switching to authenticated view");
+    showAuthenticatedView("account");
+    loadUserPreferences();
+  },
+  onError: function(error) {
+    console.error("Login error:", error);
+    webix.message({ type: "error", text: error.message || "Login failed. Please try again." });
+  }
+});
+
+const registerForm = Register({
+  onSuccess: function() {
+    console.log("Registration successful, switching to authenticated view");
+    showAuthenticatedView("account");
+    loadUserPreferences();
+  },
+  onError: function(error) {
+    console.error("Registration error:", error);
+    webix.message({ type: "error", text: error.message || "Registration failed. Please try again." });
+  },
+  onSwitchToLogin: function() {
+    console.log("Switching to login view");
+    showUnauthenticatedView("login");
+  }
+});
 
 // Create action buttons component
 const actionButtons = {
@@ -107,13 +135,15 @@ const actionButtons = {
 
 // Main application layout
 const mainLayout = {
+  view: "layout",
+  responsive: true,
   rows: [
     {
       cols: [
         {
           view: "sidebar",
           id: "mainSidebar",
-          width: 250,
+          responsive: true,
           css: "preferences-sidebar",
           hidden: true, // Initially hidden
           data: [
@@ -142,30 +172,32 @@ const mainLayout = {
           }
         },
         {
+          view: "layout",
+          responsive: true,
           rows: [
             {
               view: "multiview",
               id: "mainView",
+              responsive: true,
               animate: true,
               cells: [
                 {
                   id: "login",
+                  responsive: true,
                   rows: [
                     {
                       view: "toolbar",
+                      responsive: true,
                       css: "webix_dark",
                       cols: [
                         { view: "label", label: "Login", css: "webix_header" },
                         {},
                         {
                           view: "button",
+                          responsive: true,
                           label: "Register",
-                          width: 100,
                           click: function() {
-                            const mainView = $$("mainView");
-                            if (mainView) {
-                              mainView.setValue("register");
-                            }
+                            showUnauthenticatedView("register");
                           }
                         }
                       ]
@@ -174,23 +206,22 @@ const mainLayout = {
                   ]
                 },
                 {
-                  id: "register", 
+                  id: "register",
+                  responsive: true,
                   rows: [
                     {
                       view: "toolbar",
+                      responsive: true,
                       css: "webix_dark",
                       cols: [
                         { view: "label", label: "Register", css: "webix_header" },
                         {},
                         {
                           view: "button",
+                          responsive: true,
                           label: "Login",
-                          width: 100,
                           click: function() {
-                            const mainView = $$("mainView");
-                            if (mainView) {
-                              mainView.setValue("login");
-                            }
+                            showUnauthenticatedView("login");
                           }
                         }
                       ]
@@ -200,17 +231,19 @@ const mainLayout = {
                 },
                 {
                   id: "account",
+                  responsive: true,
                   rows: [
                     {
                       view: "toolbar",
+                      responsive: true,
                       css: "webix_dark",
                       cols: [
                         { view: "label", label: "Account Settings", css: "webix_header" },
                         {},
                         {
                           view: "button",
+                          responsive: true,
                           label: "Logout",
-                          width: 100,
                           click: function() {
                             authService.clearTokens();
                             const mainView = $$("mainView");
@@ -234,6 +267,7 @@ const mainLayout = {
                     },
                     {
                       view: "scrollview",
+                      responsive: true,
                       css: "preferences-main-scroll",
                       body: accountForm
                     }
@@ -241,9 +275,11 @@ const mainLayout = {
                 },
                 {
                   id: "notifications",
+                  responsive: true,
                   rows: [
                     {
-                      view: "toolbar", 
+                      view: "toolbar",
+                      responsive: true,
                       css: "webix_dark",
                       cols: [
                         { view: "label", label: "Notification Settings", css: "webix_header" }
@@ -251,6 +287,7 @@ const mainLayout = {
                     },
                     {
                       view: "scrollview",
+                      responsive: true,
                       css: "preferences-main-scroll",
                       body: notificationForm
                     }
@@ -258,16 +295,19 @@ const mainLayout = {
                 },
                 {
                   id: "theme",
+                  responsive: true,
                   rows: [
                     {
                       view: "toolbar",
-                      css: "webix_dark", 
+                      responsive: true,
+                      css: "webix_dark",
                       cols: [
                         { view: "label", label: "Theme Settings", css: "webix_header" }
                       ]
                     },
                     {
                       view: "scrollview",
+                      responsive: true,
                       css: "preferences-main-scroll",
                       body: themeForm
                     }
@@ -275,16 +315,19 @@ const mainLayout = {
                 },
                 {
                   id: "privacy",
+                  responsive: true,
                   rows: [
                     {
                       view: "toolbar",
+                      responsive: true,
                       css: "webix_dark",
                       cols: [
                         { view: "label", label: "Privacy Settings", css: "webix_header" }
                       ]
                     },
                     {
-                      view: "scrollview", 
+                      view: "scrollview",
+                      responsive: true,
                       css: "preferences-main-scroll",
                       body: privacyForm
                     }
@@ -295,11 +338,13 @@ const mainLayout = {
             {
               view: "toolbar",
               id: "actionButtons",
+              responsive: true,
               css: "account-buttons",
               hidden: true,
               elements: [
                 {
                   view: "button",
+                  responsive: true,
                   value: "Save All",
                   css: "webix_primary account-button",
                   click: function() {
@@ -308,7 +353,8 @@ const mainLayout = {
                 },
                 {
                   view: "button",
-                  value: "Reset All", 
+                  responsive: true,
+                  value: "Reset All",
                   css: "webix_secondary account-button",
                   click: function() {
                     if (confirm("Are you sure you want to reset all preferences to default values?")) {
@@ -318,8 +364,9 @@ const mainLayout = {
                 },
                 {
                   view: "button",
+                  responsive: true,
                   value: "Change Password",
-                  css: "webix_change-password account-button", 
+                  css: "webix_change-password account-button",
                   click: function() {
                     webix.message("Change password functionality would go here");
                   }
@@ -329,7 +376,7 @@ const mainLayout = {
           ]
         }
       ]
-    },
+    }
   ]
 };
 
@@ -379,14 +426,44 @@ webix.ready(function() {
     id: "loadingWindow",
     position: "center",
     modal: true,
-    head: "Loading",
+    head: false,
     body: {
       view: "template",
-      template: "Loading...",
+      template: `
+        <div style="text-align: center; padding: 20px;">
+          <div class="loading-spinner"></div>
+          <div style="margin-top: 15px; font-size: 16px;">Loading...</div>
+        </div>
+      `,
       css: "loading-template"
     },
     hidden: true
   });
+
+
+  // Add loading spinner styles
+  webix.html.addStyle(`
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      margin: 0 auto;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-template {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  `);
 
   // Create the main layout
   webix.ui(mainLayout, "preferences-app");

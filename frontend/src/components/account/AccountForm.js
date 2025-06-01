@@ -1,10 +1,11 @@
-import stateManager from '../utils/stateManager.js';
-import Validator from '../utils/validator.js';
+import stateManager from '../../utils/stateManager.js';
+import Validator from '../../utils/validator.js';
 
 const AccountForm = () => {
   const form = {
     view: "form",
     id: "accountForm",
+    responsive: true,
     elements: [
       { template: "Account Settings", type: "section" },
       {
@@ -16,7 +17,8 @@ const AccountForm = () => {
             placeholder: "Enter first name",
             required: true,
             invalidMessage: "First name is required",
-            validate: webix.rules.isNotEmpty
+            validate: webix.rules.isNotEmpty,
+            responsive: true
           },
           {
             view: "text",
@@ -25,7 +27,8 @@ const AccountForm = () => {
             placeholder: "Enter last name",
             required: true,
             invalidMessage: "Last name is required",
-            validate: webix.rules.isNotEmpty
+            validate: webix.rules.isNotEmpty,
+            responsive: true
           }
         ]
       },
@@ -38,7 +41,8 @@ const AccountForm = () => {
         invalidMessage: "Username must be 3-20 characters, alphanumeric only",
         validate: function(value) {
           return Validator.validateUsername(value);
-        }
+        },
+        responsive: true
       },
       {
         view: "text",
@@ -49,7 +53,8 @@ const AccountForm = () => {
         invalidMessage: "Please enter a valid email address",
         validate: function(value) {
           return Validator.validateEmail(value);
-        }
+        },
+        responsive: true
       },
       {
         view: "text",
@@ -59,15 +64,16 @@ const AccountForm = () => {
         invalidMessage: "Please enter a valid phone number",
         validate: function(value) {
           return Validator.validatePhone(value);
-        }
+        },
+        responsive: true
       },
       {
-        margin: 20,
         cols: [
           {
             view: "button",
             value: "Save Changes",
             css: "webix_primary",
+            responsive: true,
             click: async function() {
               const form = $$("accountForm");
               if (form.validate()) {
@@ -81,11 +87,11 @@ const AccountForm = () => {
               }
             }
           },
-          { width: 20 },
           {
             view: "button",
             value: "Change Password",
             css: "webix_primary",
+            responsive: true,
             click: function() {
               webix.confirm({
                 title: "Change Password",
@@ -99,11 +105,11 @@ const AccountForm = () => {
               });
             }
           },
-          { width: 20 },
           {
             view: "button",
             value: "Delete Account",
             css: "webix_danger",
+            responsive: true,
             click: function() {
               webix.confirm({
                 title: "Delete Account",
