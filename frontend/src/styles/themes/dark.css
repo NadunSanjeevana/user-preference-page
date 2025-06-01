@@ -42,6 +42,42 @@ body.webix_dark {
   color: var(--text-color) !important;
 }
 
+/* Dropdown List Styles */
+.webix_dark .webix_list_item {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.webix_dark .webix_list_item:hover {
+  background-color: rgba(155, 77, 202, 0.1) !important;
+}
+
+.webix_dark .webix_list_item.webix_selected {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+}
+
+.webix_dark .webix_popup {
+  background-color: var(--surface-color) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 4px 8px var(--shadow-color) !important;
+}
+
+.webix_dark .webix_popup .webix_list_item {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+}
+
+.webix_dark .webix_popup .webix_list_item:hover {
+  background-color: rgba(155, 77, 202, 0.1) !important;
+}
+
+.webix_dark .webix_popup .webix_list_item.webix_selected {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+}
+
 .webix_dark .webix_input,
 .webix_dark .webix_el_text input,
 .webix_dark .webix_el_select select,
@@ -79,19 +115,17 @@ body.webix_dark {
   background-color: var(--surface-color) !important;
 }
 
-.webix_dark .webix_list_item,
 .webix_dark .webix_tree_item {
   color: var(--text-color) !important;
   background-color: transparent !important;
 }
 
-.webix_dark .webix_list_item:hover,
 .webix_dark .webix_tree_item:hover {
   background-color: rgba(155, 77, 202, 0.1) !important;
 }
 
 .webix_dark .webix_selected,
-.webix_dark .webix_list_item.webix_selected {
+.webix_dark .webix_tree_item.webix_selected {
   background-color: var(--primary-color) !important;
   color: var(--text-color) !important;
 }

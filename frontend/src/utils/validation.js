@@ -19,7 +19,7 @@ class Validator {
   }
 
   static validateRequired(value) {
-    return value && value.toString().trim().length > 0;
+    return !!(value && value.toString().trim().length > 0);
   }
 
   static validatePassword(password) {

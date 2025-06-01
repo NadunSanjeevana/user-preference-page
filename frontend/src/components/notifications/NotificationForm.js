@@ -1,4 +1,5 @@
 import stateManager from '../../utils/stateManager.js';
+import languageService from '../../services/languageService.js';
 
 const NotificationForm = () => {
   const form = {
@@ -6,50 +7,62 @@ const NotificationForm = () => {
     id: "notificationForm",
     responsive: true,
     elements: [
-      { template: "Notification Settings", type: "section" },
+      { 
+        template: languageService.getTranslation('notifications.title'), 
+        type: "section" 
+      },
       {
         view: "checkbox",
         name: "emailNotifications",
-        label: "Email Notifications",
+        label: languageService.getTranslation('notifications.emailNotifications'),
+        tooltip: languageService.getTranslation('notifications.tooltips.emailNotifications'),
         responsive: true
       },
       {
         view: "checkbox",
         name: "pushNotifications",
-        label: "Push Notifications",
+        label: languageService.getTranslation('notifications.pushNotifications'),
+        tooltip: languageService.getTranslation('notifications.tooltips.pushNotifications'),
         responsive: true
       },
       {
         view: "checkbox",
         name: "smsNotifications",
-        label: "SMS Notifications",
+        label: languageService.getTranslation('notifications.smsNotifications'),
+        tooltip: languageService.getTranslation('notifications.tooltips.smsNotifications'),
         responsive: true
       },
       {
         view: "richselect",
         name: "frequency",
-        label: "Notification Frequency",
+        label: languageService.getTranslation('notifications.frequency'),
+        tooltip: languageService.getTranslation('notifications.tooltips.frequency'),
         options: [
-          { id: "immediate", value: "Immediate" },
-          { id: "hourly", value: "Hourly" },
-          { id: "daily", value: "Daily" },
-          { id: "weekly", value: "Weekly" },
-          { id: "never", value: "Never" }
+          { id: "immediate", value: languageService.getTranslation('notifications.frequencies.immediate') },
+          { id: "hourly", value: languageService.getTranslation('notifications.frequencies.hourly') },
+          { id: "daily", value: languageService.getTranslation('notifications.frequencies.daily') },
+          { id: "weekly", value: languageService.getTranslation('notifications.frequencies.weekly') },
+          { id: "never", value: languageService.getTranslation('notifications.frequencies.never') }
         ],
         value: "daily",
         responsive: true
       },
-      { template: "Marketing & Security", type: "section" },
+      { 
+        template: languageService.getTranslation('notifications.marketingAndSecurity'), 
+        type: "section" 
+      },
       {
         view: "checkbox",
         name: "marketingEmails",
-        label: "Marketing Emails",
+        label: languageService.getTranslation('notifications.types.marketing'),
+        tooltip: languageService.getTranslation('notifications.tooltips.marketing'),
         responsive: true
       },
       {
         view: "checkbox",
         name: "securityAlerts",
-        label: "Security Alerts",
+        label: languageService.getTranslation('notifications.types.security'),
+        tooltip: languageService.getTranslation('notifications.tooltips.security'),
         value: true,
         responsive: true
       },
@@ -58,7 +71,7 @@ const NotificationForm = () => {
         cols: [
           {
             view: "button",
-            value: "Save Changes",
+            value: languageService.getTranslation('save'),
             css: "webix_primary",
             responsive: true,
             click: async function() {
@@ -66,9 +79,15 @@ const NotificationForm = () => {
               try {
                 const values = form.getValues();
                 await stateManager.updatePreferences('notifications', values);
-                webix.message({ type: "success", text: "Notification settings saved successfully" });
+                webix.message({ 
+                  type: "success", 
+                  text: languageService.getTranslation('notifications.success') 
+                });
               } catch (error) {
-                webix.message({ type: "error", text: error.message });
+                webix.message({ 
+                  type: "error", 
+                  text: error.message 
+                });
               }
             }
           }
@@ -91,6 +110,39 @@ const NotificationForm = () => {
     const form = $$("notificationForm");
     if (form && state.notifications) {
       form.setValues(state.notifications);
+    }
+  });
+
+  // Subscribe to language changes
+  languageService.subscribe(() => {
+    const form = $$("notificationForm");
+    if (form) {
+      // Update form labels and tooltips
+      const elements = form.getChildViews();
+      elements.forEach(element => {
+        if (element.config && element.config.name) {
+          const key = `notifications.${element.config.name}`;
+          element.define({
+            label: languageService.getTranslation(key),
+            placeholder: languageService.getTranslation(key),
+            tooltip: languageService.getTranslation(`notifications.tooltips.${element.config.name}`)
+          });
+
+          // Update options for richselect
+          if (element.config.view === "richselect" && element.config.name === "frequency") {
+            element.define({
+              options: [
+                { id: "immediate", value: languageService.getTranslation('notifications.frequencies.immediate') },
+                { id: "hourly", value: languageService.getTranslation('notifications.frequencies.hourly') },
+                { id: "daily", value: languageService.getTranslation('notifications.frequencies.daily') },
+                { id: "weekly", value: languageService.getTranslation('notifications.frequencies.weekly') },
+                { id: "never", value: languageService.getTranslation('notifications.frequencies.never') }
+              ]
+            });
+          }
+        }
+      });
+      form.refresh();
     }
   });
 

@@ -194,3 +194,53 @@ body {
     -webkit-text-fill-color: #000;
   }
 }
+
+.language-selector {
+  margin-right: 1rem;
+}
+
+.language-selector .webix_select {
+  min-width: 120px;
+}
+
+/* Tooltip styles */
+.webix_tooltip {
+  max-width: 300px;
+  padding: 0.75rem;
+  background-color: var(--tooltip-bg, #333);
+  color: var(--tooltip-text, #fff);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Dark theme tooltip */
+[data-theme="dark"] .webix_tooltip {
+  --tooltip-bg: #444;
+  --tooltip-text: #fff;
+}
+
+/* Light theme tooltip */
+[data-theme="light"] .webix_tooltip {
+  --tooltip-bg: #333;
+  --tooltip-text: #fff;
+}
+
+/* Accessibility focus styles */
+.language-selector .webix_select:focus {
+  outline: 2px solid var(--focus-color, #4a90e2);
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .language-selector {
+    margin-right: 0.5rem;
+  }
+  
+  .language-selector .webix_select {
+    min-width: 100px;
+  }
+}

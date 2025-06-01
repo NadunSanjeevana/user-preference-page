@@ -7,6 +7,8 @@ import Login from './components/auth/Login.js';
 import Register from './components/auth/Register.js';
 import authService from './services/authService.js';
 import ApiService from './services/api.js';
+import LanguageSelector from './components/common/LanguageSelector.js';
+import languageService from './services/languageService.js';
 
 
 // Application State Management
@@ -113,26 +115,22 @@ const mainLayout = {
           css: "preferences-sidebar",
           hidden: true, // Initially hidden
           data: [
-            { id: "account", value: "Account", icon: "wxi-user" },
-            { id: "notifications", value: "Notifications", icon: "wxi-bell" },
-            { id: "theme", value: "Theme", icon: "wxi-palette" },
-            { id: "privacy", value: "Privacy", icon: "wxi-lock" }
+            { id: "account", icon: "mdi mdi-account", value: languageService.getTranslation('account.title') },
+            { id: "notifications", icon: "mdi mdi-bell", value: languageService.getTranslation('notifications.title') },
+            { id: "theme", icon: "mdi mdi-palette", value: languageService.getTranslation('theme.title') },
+            { id: "privacy", icon: "mdi mdi-shield", value: languageService.getTranslation('privacy.title') }
           ],
           on: {
             onItemClick: function(id) {
               const mainView = $$("mainView");
               if (mainView) {
-                console.log("Switching to view:", id);
                 mainView.setValue(id);
-                // Show action buttons only for authenticated views
-                const actionButtonsView = $$("actionButtons");
-                if (actionButtonsView) {
-                  if (["account", "notifications", "theme", "privacy"].includes(id)) {
-                    actionButtonsView.show();
-                  } else {
-                    actionButtonsView.hide();
-                  }
-                }
+              }
+            },
+            onSelect: function(id) {
+              const mainView = $$("mainView");
+              if (mainView) {
+                mainView.setValue(id);
               }
             }
           }
@@ -153,6 +151,7 @@ const mainLayout = {
                   rows: [
                     {
                       view: "toolbar",
+                      id: "loginToolbar",
                       responsive: true,
                       css: "webix_dark",
                       cols: [
@@ -172,11 +171,12 @@ const mainLayout = {
                   ]
                 },
                 {
-                  id: "register",
+                  id: "register", 
                   responsive: true,
                   rows: [
                     {
                       view: "toolbar",
+                      id: "registerToolbar",
                       responsive: true,
                       css: "webix_dark",
                       cols: [
@@ -201,11 +201,13 @@ const mainLayout = {
                   rows: [
                     {
                       view: "toolbar",
+                      id: "mainToolbar",
                       responsive: true,
                       css: "webix_dark",
                       cols: [
-                        { view: "label", label: "Account Settings", css: "webix_header" },
+                        { view: "label", label: "User Preferences", css: "webix_header" },
                         {},
+                        LanguageSelector(),
                         {
                           view: "button",
                           responsive: true,
@@ -244,7 +246,7 @@ const mainLayout = {
                   responsive: true,
                   rows: [
                     {
-                      view: "toolbar",
+                      view: "toolbar", 
                       responsive: true,
                       css: "webix_dark",
                       cols: [
@@ -266,7 +268,7 @@ const mainLayout = {
                     {
                       view: "toolbar",
                       responsive: true,
-                      css: "webix_dark",
+                      css: "webix_dark", 
                       cols: [
                         { view: "label", label: "Theme Settings", css: "webix_header" }
                       ]
@@ -292,7 +294,7 @@ const mainLayout = {
                       ]
                     },
                     {
-                      view: "scrollview",
+                      view: "scrollview", 
                       responsive: true,
                       css: "preferences-main-scroll",
                       body: privacyForm
@@ -311,7 +313,7 @@ const mainLayout = {
                 {
                   view: "button",
                   responsive: true,
-                  value: "Save All",
+                  value: languageService.getTranslation('save'),
                   css: "webix_primary account-button",
                   click: function() {
                     saveAllPreferences();
@@ -320,10 +322,10 @@ const mainLayout = {
                 {
                   view: "button",
                   responsive: true,
-                  value: "Reset All",
+                  value: languageService.getTranslation('reset'),
                   css: "webix_secondary account-button",
                   click: function() {
-                    if (confirm("Are you sure you want to reset all preferences to default values?")) {
+                    if (confirm(languageService.getTranslation('privacy.clearDataWarning'))) {
                       resetAllForms();
                     }
                   }
@@ -331,10 +333,10 @@ const mainLayout = {
                 {
                   view: "button",
                   responsive: true,
-                  value: "Change Password",
-                  css: "webix_change-password account-button",
+                  value: languageService.getTranslation('changePassword'),
+                  css: "webix_change-password account-button", 
                   click: function() {
-                    webix.message("Change password functionality would go here");
+                    webix.message(languageService.getTranslation('account.tooltips.password'));
                   }
                 }
               ]
@@ -356,8 +358,21 @@ function showAuthenticatedView(viewName = "account") {
     mainView.setValue(viewName);
   }
   if (sidebar) {
+    // Update sidebar data with current translations
+    sidebar.define({
+      data: [
+        { id: "account", icon: "mdi mdi-account", value: languageService.getTranslation('account.title') },
+        { id: "notifications", icon: "mdi mdi-bell", value: languageService.getTranslation('notifications.title') },
+        { id: "theme", icon: "mdi mdi-palette", value: languageService.getTranslation('theme.title') },
+        { id: "privacy", icon: "mdi mdi-shield", value: languageService.getTranslation('privacy.title') }
+      ]
+    });
+    sidebar.refresh();
     sidebar.show(); // Show sidebar for authenticated users
     sidebar.select(viewName);
+    
+    // Force a re-render of the sidebar
+    sidebar.render();
   }
   if (actionButtonsView) {
     actionButtonsView.show();
@@ -798,7 +813,7 @@ webix.ready(function() {
     setupFormHandlers();
     setupKeyboardNavigation();
     enhanceAccessibility();
-    
+
     // ADDED: Apply initial theme
     applyThemeSettings();
 
@@ -1034,3 +1049,63 @@ if (typeof module !== 'undefined' && module.exports) {
     showUnauthenticatedView
   };
 }
+
+// Subscribe to language changes for sidebar and toolbar
+languageService.subscribe(() => {
+  // Update sidebar
+  const sidebar = $$("mainSidebar");
+  if (sidebar) {
+    sidebar.define({
+      data: [
+        { id: "account", icon: "mdi mdi-account", value: languageService.getTranslation('account.title') },
+        { id: "notifications", icon: "mdi mdi-bell", value: languageService.getTranslation('notifications.title') },
+        { id: "theme", icon: "mdi mdi-palette", value: languageService.getTranslation('theme.title') },
+        { id: "privacy", icon: "mdi mdi-shield", value: languageService.getTranslation('privacy.title') }
+      ]
+    });
+    sidebar.refresh();
+  }
+
+  // Update action buttons
+  const actionButtons = $$("actionButtons");
+  if (actionButtons) {
+    const buttons = actionButtons.getChildViews();
+    buttons.forEach(button => {
+      if (button.config && button.config.value) {
+        if (button.config.value === languageService.getTranslation('save')) {
+          button.define("value", languageService.getTranslation('save'));
+        } else if (button.config.value === languageService.getTranslation('reset')) {
+          button.define("value", languageService.getTranslation('reset'));
+        } else if (button.config.value === languageService.getTranslation('changePassword')) {
+          button.define("value", languageService.getTranslation('changePassword'));
+        }
+      }
+    });
+    actionButtons.refresh();
+  }
+
+  // Update toolbar buttons
+  const toolbars = [
+    $$("mainToolbar"),
+    $$("loginToolbar"),
+    $$("registerToolbar")
+  ];
+
+  toolbars.forEach(toolbar => {
+    if (toolbar) {
+      const buttons = toolbar.getChildViews();
+      buttons.forEach(button => {
+        if (button.config && button.config.value) {
+          if (button.config.value === "Logout") {
+            button.define("value", languageService.getTranslation('logout'));
+          } else if (button.config.value === "Login") {
+            button.define("value", languageService.getTranslation('login'));
+          } else if (button.config.value === "Register") {
+            button.define("value", languageService.getTranslation('register'));
+          }
+        }
+      });
+      toolbar.refresh();
+    }
+  });
+});

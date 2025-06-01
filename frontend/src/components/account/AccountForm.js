@@ -1,5 +1,6 @@
 import stateManager from '../../utils/stateManager.js';
 import Validator from '../../utils/validator.js';
+import languageService from '../../services/languageService.js';
 
 const AccountForm = () => {
   const form = {
@@ -7,71 +8,79 @@ const AccountForm = () => {
     id: "accountForm",
     responsive: true,
     elements: [
-      { template: "Account Settings", type: "section" },
+      { 
+        template: languageService.getTranslation('account.title'), 
+        type: "section" 
+      },
       {
         cols: [
           {
             view: "text",
             name: "firstName",
-            label: "First Name",
-            placeholder: "Enter first name",
+            label: languageService.getTranslation('account.firstName'),
+            placeholder: languageService.getTranslation('account.firstName'),
             required: true,
-            invalidMessage: "First name is required",
+            invalidMessage: languageService.getTranslation('required'),
             validate: webix.rules.isNotEmpty,
-            responsive: true
+            responsive: true,
+            tooltip: languageService.getTranslation('account.tooltips.firstName')
           },
           {
             view: "text",
             name: "lastName",
-            label: "Last Name",
-            placeholder: "Enter last name",
+            label: languageService.getTranslation('account.lastName'),
+            placeholder: languageService.getTranslation('account.lastName'),
             required: true,
-            invalidMessage: "Last name is required",
+            invalidMessage: languageService.getTranslation('required'),
             validate: webix.rules.isNotEmpty,
-            responsive: true
+            responsive: true,
+            tooltip: languageService.getTranslation('account.tooltips.lastName')
           }
         ]
       },
       {
         view: "text",
         name: "username",
-        label: "Username",
-        placeholder: "Enter username (3-20 characters)",
+        label: languageService.getTranslation('account.username'),
+        placeholder: languageService.getTranslation('account.username'),
         required: true,
-        invalidMessage: "Username must be 3-20 characters, alphanumeric only",
+        invalidMessage: languageService.getTranslation('account.tooltips.username'),
         validate: function(value) {
           return Validator.validateUsername(value);
         },
-        responsive: true
+        responsive: true,
+        tooltip: languageService.getTranslation('account.tooltips.username')
       },
       {
         view: "text",
         name: "email",
-        label: "Email Address",
-        placeholder: "Enter email address",
+        label: languageService.getTranslation('account.email'),
+        placeholder: languageService.getTranslation('account.email'),
         required: true,
-        invalidMessage: "Please enter a valid email address",
+        invalidMessage: languageService.getTranslation('account.tooltips.email'),
         validate: function(value) {
           return Validator.validateEmail(value);
         },
-        responsive: true
+        responsive: true,
+        tooltip: languageService.getTranslation('account.tooltips.email')
       },
       {
         view: "text",
         name: "phone",
-        label: "Phone Number",
-        placeholder: "Enter phone number (optional)",
-        invalidMessage: "Please enter a valid phone number",
+        label: languageService.getTranslation('account.phone'),
+        placeholder: languageService.getTranslation('account.phone'),
+        invalidMessage: languageService.getTranslation('account.tooltips.phone'),
         validate: function(value) {
           return Validator.validatePhone(value);
         },
-        responsive: true
+        responsive: true,
+        tooltip: languageService.getTranslation('account.tooltips.phone')
       },
       {
         cols: [
           {
             view: "button",
-            value: "Save Changes",
+            value: languageService.getTranslation('save'),
             css: "webix_primary",
             responsive: true,
             click: async function() {
@@ -80,46 +89,58 @@ const AccountForm = () => {
                 try {
                   const values = form.getValues();
                   await stateManager.updatePreferences('account', values);
-                  webix.message({ type: "success", text: "Account settings saved successfully" });
+                  webix.message({ 
+                    type: "success", 
+                    text: languageService.getTranslation('success') 
+                  });
                 } catch (error) {
-                  webix.message({ type: "error", text: error.message });
+                  webix.message({ 
+                    type: "error", 
+                    text: error.message 
+                  });
                 }
               }
             }
           },
           {
             view: "button",
-            value: "Change Password",
+            value: languageService.getTranslation('account.changePassword'),
             css: "webix_primary",
             responsive: true,
             click: function() {
               webix.confirm({
-                title: "Change Password",
-                text: "Password change functionality would redirect to a secure password change form.",
-                ok: "Continue",
-                cancel: "Cancel"
+                title: languageService.getTranslation('account.changePassword'),
+                text: languageService.getTranslation('account.tooltips.password'),
+                ok: languageService.getTranslation('save'),
+                cancel: languageService.getTranslation('cancel')
               }).then(function(result) {
                 if (result) {
-                  webix.message({ type: "success", text: "Password change initiated. Check your email for instructions." });
+                  webix.message({ 
+                    type: "success", 
+                    text: languageService.getTranslation('success') 
+                  });
                 }
               });
             }
           },
           {
             view: "button",
-            value: "Delete Account",
+            value: languageService.getTranslation('account.deleteAccount'),
             css: "webix_danger",
             responsive: true,
             click: function() {
               webix.confirm({
-                title: "Delete Account",
-                text: "This action cannot be undone. Are you sure you want to delete your account?",
-                ok: "Delete",
-                cancel: "Cancel",
+                title: languageService.getTranslation('account.deleteAccount'),
+                text: languageService.getTranslation('account.tooltips.deleteAccount'),
+                ok: languageService.getTranslation('account.deleteAccount'),
+                cancel: languageService.getTranslation('cancel'),
                 type: "confirm-error"
               }).then(function(result) {
                 if (result) {
-                  webix.message({ type: "error", text: "Account deletion requires additional verification steps." });
+                  webix.message({ 
+                    type: "error", 
+                    text: languageService.getTranslation('error') 
+                  });
                 }
               });
             }
@@ -137,6 +158,26 @@ const AccountForm = () => {
       }
     }
   };
+
+  // Subscribe to language changes
+  languageService.subscribe(() => {
+    const form = $$("accountForm");
+    if (form) {
+      // Update form labels and tooltips
+      const elements = form.getChildViews();
+      elements.forEach(element => {
+        if (element.config && element.config.name) {
+          const key = `account.${element.config.name}`;
+          element.define({
+            label: languageService.getTranslation(key),
+            placeholder: languageService.getTranslation(key),
+            tooltip: languageService.getTranslation(`account.tooltips.${element.config.name}`)
+          });
+        }
+      });
+      form.refresh();
+    }
+  });
 
   // Subscribe to state changes
   stateManager.subscribe((state) => {
