@@ -58,8 +58,14 @@ const languages = {
       username: "Username",
       email: "Email Address",
       phone: "Phone Number",
-      password: "Password",
-      changePassword: "Change Password",
+      passwordSection: "Password Settings",
+      currentPassword: "Current Password",
+      newPassword: "New Password",
+      confirmPassword: "Confirm New Password",
+      updatePassword: "Update Password",
+      passwordRequired: "All password fields are required",
+      passwordMismatch: "New password and confirm password do not match",
+      passwordUpdated: "Password updated successfully",
       deleteAccount: "Delete Account",
       tooltips: {
         firstName: "Enter your legal first name",
@@ -67,7 +73,9 @@ const languages = {
         username: "Choose a unique username (3-20 characters, alphanumeric only)",
         email: "Enter a valid email address for account notifications",
         phone: "Enter your phone number (optional) for account recovery",
-        password: "Password must be at least 8 characters with uppercase, lowercase, and numbers"
+        currentPassword: "Enter your current password to verify your identity",
+        newPassword: "Enter a new password (min. 8 characters with uppercase, lowercase, and numbers)",
+        confirmPassword: "Re-enter your new password to confirm"
       }
     },
 
@@ -223,8 +231,14 @@ const languages = {
       username: "Nombre de Usuario",
       email: "Correo Electrónico",
       phone: "Número de Teléfono",
-      password: "Contraseña",
-      changePassword: "Cambiar Contraseña",
+      passwordSection: "Configuración de Contraseña",
+      currentPassword: "Contraseña Actual",
+      newPassword: "Nueva Contraseña",
+      confirmPassword: "Confirmar Nueva Contraseña",
+      updatePassword: "Actualizar Contraseña",
+      passwordRequired: "Todos los campos de contraseña son obligatorios",
+      passwordMismatch: "La nueva contraseña y la confirmación no coinciden",
+      passwordUpdated: "Contraseña actualizada exitosamente",
       deleteAccount: "Eliminar Cuenta",
       tooltips: {
         firstName: "Ingrese su nombre legal",
@@ -232,7 +246,9 @@ const languages = {
         username: "Elija un nombre de usuario único (3-20 caracteres, solo alfanuméricos)",
         email: "Ingrese un correo electrónico válido para notificaciones",
         phone: "Ingrese su número de teléfono (opcional) para recuperación de cuenta",
-        password: "La contraseña debe tener al menos 8 caracteres con mayúsculas, minúsculas y números"
+        currentPassword: "Ingrese su contraseña actual para verificar su identidad",
+        newPassword: "Ingrese una nueva contraseña (mín. 8 caracteres con mayúsculas, minúsculas y números)",
+        confirmPassword: "Vuelva a ingresar su nueva contraseña para confirmar"
       }
     },
 
