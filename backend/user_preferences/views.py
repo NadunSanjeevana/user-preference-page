@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
@@ -8,6 +8,10 @@ from django.core.exceptions import ValidationError
 from .models import UserPreferences
 from .serializers import UserPreferencesSerializer
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
+
+User = get_user_model()
 
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -148,4 +152,66 @@ class UserPreferencesViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         
         serializer = self.get_serializer(preferences)
-        return Response(serializer.data) 
+        return Response(serializer.data)
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def update_password(request):
+    """
+    Update user password
+    """
+    try:
+        print("Received password update request")
+        print("Request data:", request.data)
+        print("User:", request.user)
+        
+        current_password = request.data.get('currentPassword')
+        new_password = request.data.get('newPassword')
+        
+        print("Current password provided:", bool(current_password))
+        print("New password provided:", bool(new_password))
+        
+        if not current_password or not new_password:
+            print("Missing password fields")
+            return Response(
+                {'errors': {'currentPassword': 'Current password is required', 'newPassword': 'New password is required'}},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Verify current password
+        if not request.user.check_password(current_password):
+            print("Current password verification failed")
+            return Response(
+                {'errors': {'currentPassword': 'Current password is incorrect'}},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate new password
+        try:
+            validate_password(new_password, request.user)
+        except ValidationError as e:
+            print("New password validation failed:", e.messages)
+            return Response(
+                {'errors': {'newPassword': e.messages[0] if e.messages else 'Invalid password format'}},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Update password
+        request.user.set_password(new_password)
+        request.user.save()
+        
+        # Invalidate all existing tokens
+        RefreshToken.for_user(request.user)
+        
+        print("Password updated successfully")
+        return Response(
+            {'message': 'Password updated successfully'},
+            status=status.HTTP_200_OK
+        )
+        
+    except Exception as e:
+        print("Error updating password:", str(e))
+        return Response(
+            {'errors': {'general': str(e)}},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        ) 

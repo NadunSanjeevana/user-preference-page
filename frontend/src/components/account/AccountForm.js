@@ -200,7 +200,9 @@ const AccountForm = () => {
         type: "password",
         required: true,
         invalidMessage: languageService.getTranslation('required'),
-        validate: webix.rules.isNotEmpty,
+        validate: function(value) {
+          return Validator.validatePassword(value);
+        },
         responsive: true,
         labelPosition: "top",
         css: "required-field",

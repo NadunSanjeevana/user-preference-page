@@ -8,7 +8,8 @@ class ApiService {
       myPreferences: '/preferences/my_preferences/',
       token: '/token/',
       tokenRefresh: '/token/refresh/',
-      register: '/register/'
+      register: '/register/',
+      password: '/account/password/'
     };
   }
 
@@ -221,6 +222,45 @@ class ApiService {
       if (!response.ok) throw new Error('Failed to update privacy settings');
       return await response.json();
     } catch (error) {
+      ErrorHandler.handleApiError(error);
+      throw error;
+    }
+  }
+
+  async updatePassword(passwordData) {
+    try {
+      console.log('Making password update request to:', `${this.baseUrl}${this.endpoints.password}`);
+      console.log('Request payload:', passwordData);
+      
+      const response = await fetch(`${this.baseUrl}${this.endpoints.password}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(passwordData)
+      });
+
+      console.log('Response status:', response.status);
+      
+      if (response.status === 401) {
+        console.log('Token expired, attempting refresh');
+        await this.refreshToken();
+        return this.updatePassword(passwordData);
+      }
+
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        console.error('Password update failed:', responseData);
+        throw new Error(JSON.stringify(responseData.errors || { general: 'Failed to update password' }));
+      }
+
+      console.log('Password update successful:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('Password update error:', error);
       ErrorHandler.handleApiError(error);
       throw error;
     }
