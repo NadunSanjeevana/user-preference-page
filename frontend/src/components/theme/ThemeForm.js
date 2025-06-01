@@ -1,4 +1,4 @@
-// Fixed ThemeForm.js
+// Fixed ThemeForm.js with consistent dropdown styling
 import stateManager from '../../utils/stateManager.js';
 import languageService from '../../services/languageService.js';
 
@@ -13,12 +13,13 @@ const ThemeForm = () => {
         type: "section" 
       },
       {
-        view: "select",
+        view: "richselect",
         name: "colorScheme",
         label: languageService.getTranslation('theme.colorScheme'),
         labelPosition: "top",
         css: "required-field",
         required: true,
+        tooltip: languageService.getTranslation('theme.tooltips.colorScheme'),
         options: [
           { id: "light", value: languageService.getTranslation('theme.schemes.light') },
           { id: "dark", value: languageService.getTranslation('theme.schemes.dark') },
@@ -36,12 +37,13 @@ const ThemeForm = () => {
         }
       },
       {
-        view: "select",
+        view: "richselect",
         name: "fontSize",
         label: languageService.getTranslation('theme.fontSize'),
         labelPosition: "top",
         css: "required-field",
         required: true,
+        tooltip: languageService.getTranslation('theme.tooltips.fontSize'),
         options: [
           { id: "small", value: languageService.getTranslation('theme.sizes.small') },
           { id: "medium", value: languageService.getTranslation('theme.sizes.medium') },
@@ -59,12 +61,13 @@ const ThemeForm = () => {
         }
       },
       {
-        view: "select",
+        view: "richselect",
         name: "layout",
         label: languageService.getTranslation('theme.layout'),
         labelPosition: "top",
         css: "required-field",
         required: true,
+        tooltip: languageService.getTranslation('theme.tooltips.layout'),
         options: [
           { id: "standard", value: languageService.getTranslation('theme.layouts.standard') },
           { id: "compact", value: languageService.getTranslation('theme.layouts.compact') },
@@ -86,6 +89,7 @@ const ThemeForm = () => {
         label: languageService.getTranslation('theme.animations'),
         css: "required-field",
         required: true,
+        tooltip: languageService.getTranslation('theme.tooltips.animations'),
         value: true,
         responsive: true,
         on: {
@@ -100,6 +104,7 @@ const ThemeForm = () => {
         view: "checkbox",
         name: "compactMode",
         label: languageService.getTranslation('theme.compactMode'),
+        tooltip: languageService.getTranslation('theme.tooltips.compactMode'),
         responsive: true,
         on: {
           onChange: function(newVal, oldVal) {
@@ -207,6 +212,54 @@ const ThemeForm = () => {
     if (form && state.theme) {
       form.setValues(state.theme);
       applyThemeImmediately(state.theme);
+    }
+  });
+
+  // Subscribe to language changes (similar to PrivacyForm)
+  languageService.subscribe(() => {
+    const form = $$("themeForm");
+    if (form) {
+      // Update form labels and options
+      const elements = form.getChildViews();
+      elements.forEach(element => {
+        if (element.config && element.config.name) {
+          const key = `theme.${element.config.name}`;
+          element.define({
+            label: languageService.getTranslation(key)
+          });
+
+          // Update options for richselect components
+          if (element.config.view === "richselect") {
+            if (element.config.name === "colorScheme") {
+              element.define({
+                options: [
+                  { id: "light", value: languageService.getTranslation('theme.schemes.light') },
+                  { id: "dark", value: languageService.getTranslation('theme.schemes.dark') },
+                  { id: "auto", value: languageService.getTranslation('theme.schemes.auto') }
+                ]
+              });
+            } else if (element.config.name === "fontSize") {
+              element.define({
+                options: [
+                  { id: "small", value: languageService.getTranslation('theme.sizes.small') },
+                  { id: "medium", value: languageService.getTranslation('theme.sizes.medium') },
+                  { id: "large", value: languageService.getTranslation('theme.sizes.large') },
+                  { id: "extra-large", value: languageService.getTranslation('theme.sizes.extraLarge') }
+                ]
+              });
+            } else if (element.config.name === "layout") {
+              element.define({
+                options: [
+                  { id: "standard", value: languageService.getTranslation('theme.layouts.standard') },
+                  { id: "compact", value: languageService.getTranslation('theme.layouts.compact') },
+                  { id: "spacious", value: languageService.getTranslation('theme.layouts.spacious') }
+                ]
+              });
+            }
+          }
+        }
+      });
+      form.refresh();
     }
   });
 
