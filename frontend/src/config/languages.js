@@ -75,7 +75,32 @@ const languages = {
         phone: "Enter your phone number (optional) for account recovery",
         currentPassword: "Enter your current password to verify your identity",
         newPassword: "Enter a new password (min. 8 characters with uppercase, lowercase, and numbers)",
-        confirmPassword: "Re-enter your new password to confirm"
+        confirmPassword: "Re-enter your new password to confirm",
+        deleteAccount: "Permanently delete your account and all associated data"
+      }
+    },
+
+    // Password Security Settings
+    password: {
+      title: "Password & Security",
+      security: {
+        title: "Security Settings",
+        twoFactor: "Two-Factor Authentication",
+        sessionTimeout: "Session Timeout",
+        sessions: {
+          revoke: "Revoke All Sessions",
+          revokeConfirm: {
+            title: "Revoke All Sessions",
+            text: "This will log you out of all devices. Are you sure you want to continue?"
+          },
+          revokeSuccess: "All sessions have been revoked successfully",
+          revokeError: "Failed to revoke sessions"
+        }
+      },
+      tooltips: {
+        twoFactor: "Add an extra layer of security to your account",
+        sessionTimeout: "Automatically log out after a period of inactivity",
+        revokeSessions: "Log out from all devices and browsers"
       }
     },
 
@@ -248,7 +273,32 @@ const languages = {
         phone: "Ingrese su número de teléfono (opcional) para recuperación de cuenta",
         currentPassword: "Ingrese su contraseña actual para verificar su identidad",
         newPassword: "Ingrese una nueva contraseña (mín. 8 caracteres con mayúsculas, minúsculas y números)",
-        confirmPassword: "Vuelva a ingresar su nueva contraseña para confirmar"
+        confirmPassword: "Vuelva a ingresar su nueva contraseña para confirmar",
+        deleteAccount: "Eliminar permanentemente su cuenta y todos los datos asociados"
+      }
+    },
+
+    // Password Security Settings
+    password: {
+      title: "Contraseña y Seguridad",
+      security: {
+        title: "Configuración de Seguridad",
+        twoFactor: "Autenticación de Dos Factores",
+        sessionTimeout: "Tiempo de Sesión",
+        sessions: {
+          revoke: "Revocar Todas las Sesiones",
+          revokeConfirm: {
+            title: "Revocar Todas las Sesiones",
+            text: "Esto cerrará su sesión en todos los dispositivos. ¿Está seguro de que desea continuar?"
+          },
+          revokeSuccess: "Todas las sesiones han sido revocadas exitosamente",
+          revokeError: "Error al revocar las sesiones"
+        }
+      },
+      tooltips: {
+        twoFactor: "Agregue una capa adicional de seguridad a su cuenta",
+        sessionTimeout: "Cerrar sesión automáticamente después de un período de inactividad",
+        revokeSessions: "Cerrar sesión en todos los dispositivos y navegadores"
       }
     },
 

@@ -2,6 +2,7 @@ import AccountForm from '../components/account/AccountForm.js';
 import NotificationForm from '../components/notifications/NotificationForm.js';
 import ThemeForm from '../components/theme/ThemeForm.js';
 import PrivacyForm from '../components/privacy/PrivacyForm.js';
+import PasswordForm from '../components/account/PasswordForm.js';
 import LanguageSelector from '../components/common/LanguageSelector.js';
 import languageService from '../services/languageService.js';
 import authService from '../services/authService.js';
@@ -13,6 +14,7 @@ const PreferencesPage = ({ onLogout }) => {
   const notificationForm = NotificationForm();
   const themeForm = ThemeForm();
   const privacyForm = PrivacyForm();
+  const passwordForm = PasswordForm();
 
   return {
     view: "layout",
@@ -27,6 +29,7 @@ const PreferencesPage = ({ onLogout }) => {
             css: "preferences-sidebar",
             data: [
               { id: "account", icon: "mdi mdi-account", value: languageService.getTranslation('account.title') },
+              { id: "password", icon: "mdi mdi-lock", value: languageService.getTranslation('password.title') },
               { id: "notifications", icon: "mdi mdi-bell", value: languageService.getTranslation('notifications.title') },
               { id: "theme", icon: "mdi mdi-palette", value: languageService.getTranslation('theme.title') },
               { id: "privacy", icon: "mdi mdi-shield", value: languageService.getTranslation('privacy.title') }
@@ -97,6 +100,18 @@ const PreferencesPage = ({ onLogout }) => {
                     ]
                   },
                   {
+                    id: "password",
+                    responsive: true,
+                    rows: [
+                      {
+                        view: "scrollview",
+                        responsive: true,
+                        css: "preferences-main-scroll",
+                        body: passwordForm
+                      }
+                    ]
+                  },
+                  {
                     id: "notifications",
                     responsive: true,
                     rows: [
@@ -142,4 +157,4 @@ const PreferencesPage = ({ onLogout }) => {
   };
 };
 
-export default PreferencesPage; 
+export default PreferencesPage;
