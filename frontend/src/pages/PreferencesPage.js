@@ -34,9 +34,7 @@ const PreferencesPage = ({ onLogout }) => {
             on: {
               onItemClick: function(id) {
                 const mainView = $$("mainView");
-                if (mainView) {
-                  mainView.setValue(id);
-                }
+                mainView.setValue(id);
               }
             }
           },
@@ -49,6 +47,26 @@ const PreferencesPage = ({ onLogout }) => {
                 responsive: true,
                 css: "webix_dark",
                 cols: [
+                  {
+                    view: "button",
+                    type: "icon",
+                    icon: "mdi mdi-menu",
+                    width: 40,
+                    css: "webix_primary",
+                    click: function() {
+                      const sidebar = $$("mainSidebar");
+                      if (sidebar) {
+                        if (sidebar.isVisible()) {
+                          sidebar.hide();
+                          this.define("icon", "mdi mdi-menu");
+                        } else {
+                          sidebar.show();
+                          this.define("icon", "mdi mdi-close");
+                        }
+                        this.refresh();
+                      }
+                    }
+                  },
                   { view: "label", label: languageService.getTranslation('preferences.title'), css: "webix_header" },
                   {},
                   LanguageSelector(),

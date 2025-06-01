@@ -139,4 +139,20 @@
   background-color: rgba(33, 150, 243, 0.1) !important;
   color: #2196f3 !important;
   border-color: #2196f3 !important;
+}
+
+/* Toggle button styles */
+.webix_button.webix_icon_button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--webix-form-text, #ffffff) !important;
+}
+
+.webix_button.webix_icon_button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.webix_button.webix_icon_button .webix_icon {
+  font-size: 24px !important;
+  line-height: 1 !important;
 } 

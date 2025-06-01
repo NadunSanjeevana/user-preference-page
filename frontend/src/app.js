@@ -163,38 +163,38 @@ function createFallbackAuthForm(type) {
 // Main application layout with proper initial views
 const app = {
   container: "preferences-app",
-  view: "layout",
-  responsive: true,
-  rows: [
-    {
-      view: "multiview",
-      id: "appView",
-      responsive: true,
-      animate: true,
-      cells: [
-        {
-          id: "login",
           view: "layout",
+          responsive: true,
           rows: [
+            {
+              view: "multiview",
+      id: "appView",
+              responsive: true,
+              animate: true,
+              cells: [
+                {
+                  id: "login",
+          view: "layout",
+                  rows: [
             LoginPage({
-              onLoginSuccess: () => {
+              onLoginSuccess: async () => {
+                await loadUserPreferences();
                 showPreferencesPage();
-                loadUserPreferences();
               },
               onSwitchToRegister: () => {
                 showRegisterPage();
               }
             })
-          ]
-        },
-        {
-          id: "register", 
+                  ]
+                },
+                {
+                  id: "register", 
           view: "layout",
-          rows: [
+                  rows: [
             RegisterPage({
-              onRegisterSuccess: () => {
+              onRegisterSuccess: async () => {
+                await loadUserPreferences();
                 showPreferencesPage();
-                loadUserPreferences();
               },
               onSwitchToLogin: () => {
                 showLoginPage();
@@ -205,10 +205,10 @@ const app = {
         {
           id: "preferences",
           view: "layout",
-          rows: [
+                  rows: [
             PreferencesPage({
               onLogout: () => {
-                authService.clearTokens();
+                            authService.clearTokens();
                 showLoginPage();
                 webix.message({ type: "success", text: "Logged out successfully" });
               }
@@ -263,7 +263,34 @@ function showPreferencesPage() {
   }
 }
 
+// Show loading popup
+function showLoadingPopup() {
+  webix.ui({
+    view: "window",
+    id: "loadingPopup",
+    modal: true,
+    position: "center",
+    head: false,
+    body: {
+      view: "template",
+      template: `
+        <div style="text-align: center; padding: 20px;">
+          <div class="webix_loading" style="margin-bottom: 15px;"></div>
+          <div>Loading preferences...</div>
+        </div>
+      `,
+      css: "loading-popup"
+    }
+  }).show();
+}
 
+// Hide loading popup
+function hideLoadingPopup() {
+  const popup = $$("loadingPopup");
+  if (popup) {
+    popup.close();
+  }
+}
 
 // Save all preferences
 async function saveAllPreferences() {
@@ -455,8 +482,8 @@ function initAppWithTheme() {
 // Enhanced preferences loading function
 async function loadUserPreferences() {
   try {
-    // Show loading message
-    webix.message({ type: "info", text: "Loading preferences..." });
+    // Show loading popup
+    showLoadingPopup();
     
     // Fetch preferences from backend
     const preferences = await api.fetchPreferences();
@@ -489,8 +516,6 @@ async function loadUserPreferences() {
       if (preferences.theme) {
         applyThemeSettings();
       }
-      
-      webix.message({ type: "success", text: "Preferences loaded successfully" });
     } else {
       // If no preferences exist, create default preferences
       const defaultPreferences = {
@@ -537,12 +562,13 @@ async function loadUserPreferences() {
       
       // Apply default theme
       applyThemeSettings();
-      
-      webix.message({ type: "info", text: "Default preferences created" });
     }
   } catch (error) {
     console.error("Error loading preferences:", error);
     webix.message({ type: "error", text: "Failed to load preferences: " + error.message });
+  } finally {
+    // Hide loading popup
+    hideLoadingPopup();
   }
 }
 
