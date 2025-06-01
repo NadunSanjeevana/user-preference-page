@@ -23,7 +23,9 @@ const AccountForm = () => {
             invalidMessage: languageService.getTranslation('required'),
             validate: webix.rules.isNotEmpty,
             responsive: true,
-            tooltip: languageService.getTranslation('account.tooltips.firstName')
+            tooltip: languageService.getTranslation('account.tooltips.firstName'),
+            labelPosition: "top",
+            css: "required-field"
           },
           {
             view: "text",
@@ -34,7 +36,9 @@ const AccountForm = () => {
             invalidMessage: languageService.getTranslation('required'),
             validate: webix.rules.isNotEmpty,
             responsive: true,
-            tooltip: languageService.getTranslation('account.tooltips.lastName')
+            tooltip: languageService.getTranslation('account.tooltips.lastName'),
+            labelPosition: "top",
+            css: "required-field"
           }
         ]
       },
@@ -49,7 +53,9 @@ const AccountForm = () => {
           return Validator.validateUsername(value);
         },
         responsive: true,
-        tooltip: languageService.getTranslation('account.tooltips.username')
+        tooltip: languageService.getTranslation('account.tooltips.username'),
+        labelPosition: "top",
+        css: "required-field"
       },
       {
         view: "text",
@@ -62,7 +68,9 @@ const AccountForm = () => {
           return Validator.validateEmail(value);
         },
         responsive: true,
-        tooltip: languageService.getTranslation('account.tooltips.email')
+        tooltip: languageService.getTranslation('account.tooltips.email'),
+        labelPosition: "top",
+        css: "required-field"
       },
       {
         view: "text",
@@ -74,7 +82,9 @@ const AccountForm = () => {
           return Validator.validatePhone(value);
         },
         responsive: true,
-        tooltip: languageService.getTranslation('account.tooltips.phone')
+        tooltip: languageService.getTranslation('account.tooltips.phone'),
+        labelPosition: "top",
+        attributes: { type: "tel" }
       },
       {
         cols: [

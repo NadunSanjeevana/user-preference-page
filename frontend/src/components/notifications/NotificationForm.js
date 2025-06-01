@@ -16,6 +16,8 @@ const NotificationForm = () => {
         name: "emailNotifications",
         label: languageService.getTranslation('notifications.emailNotifications'),
         tooltip: languageService.getTranslation('notifications.tooltips.emailNotifications'),
+        css: "required-field",
+        required: true,
         responsive: true
       },
       {
@@ -23,6 +25,8 @@ const NotificationForm = () => {
         name: "pushNotifications",
         label: languageService.getTranslation('notifications.pushNotifications'),
         tooltip: languageService.getTranslation('notifications.tooltips.pushNotifications'),
+        css: "required-field",
+        required: true,
         responsive: true
       },
       {
@@ -37,6 +41,8 @@ const NotificationForm = () => {
         name: "frequency",
         label: languageService.getTranslation('notifications.frequency'),
         tooltip: languageService.getTranslation('notifications.tooltips.frequency'),
+        css: "required-field",
+        required: true,
         options: [
           { id: "immediate", value: languageService.getTranslation('notifications.frequencies.immediate') },
           { id: "hourly", value: languageService.getTranslation('notifications.frequencies.hourly') },
@@ -56,6 +62,8 @@ const NotificationForm = () => {
         name: "marketingEmails",
         label: languageService.getTranslation('notifications.types.marketing'),
         tooltip: languageService.getTranslation('notifications.tooltips.marketing'),
+        css: "required-field",
+        required: true,
         responsive: true
       },
       {
@@ -63,6 +71,8 @@ const NotificationForm = () => {
         name: "securityAlerts",
         label: languageService.getTranslation('notifications.types.security'),
         tooltip: languageService.getTranslation('notifications.tooltips.security'),
+        css: "required-field",
+        required: true,
         value: true,
         responsive: true
       },
@@ -102,6 +112,12 @@ const NotificationForm = () => {
           this.setValues(notificationData);
         }
       }
+    },
+    rules: {
+      emailNotifications: webix.rules.isNotEmpty,
+      pushNotifications: webix.rules.isNotEmpty,
+      frequency: webix.rules.isNotEmpty,
+      securityAlerts: webix.rules.isNotEmpty
     }
   };
 

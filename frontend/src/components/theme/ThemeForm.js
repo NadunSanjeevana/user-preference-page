@@ -13,10 +13,12 @@ const ThemeForm = () => {
         type: "section" 
       },
       {
-        view: "segmented",
+        view: "select",
         name: "colorScheme",
         label: languageService.getTranslation('theme.colorScheme'),
-        tooltip: languageService.getTranslation('theme.tooltips.colorScheme'),
+        labelPosition: "top",
+        css: "required-field",
+        required: true,
         options: [
           { id: "light", value: languageService.getTranslation('theme.schemes.light') },
           { id: "dark", value: languageService.getTranslation('theme.schemes.dark') },
@@ -34,10 +36,12 @@ const ThemeForm = () => {
         }
       },
       {
-        view: "richselect",
+        view: "select",
         name: "fontSize",
         label: languageService.getTranslation('theme.fontSize'),
-        tooltip: languageService.getTranslation('theme.tooltips.fontSize'),
+        labelPosition: "top",
+        css: "required-field",
+        required: true,
         options: [
           { id: "small", value: languageService.getTranslation('theme.sizes.small') },
           { id: "medium", value: languageService.getTranslation('theme.sizes.medium') },
@@ -55,10 +59,12 @@ const ThemeForm = () => {
         }
       },
       {
-        view: "richselect",
+        view: "select",
         name: "layout",
         label: languageService.getTranslation('theme.layout'),
-        tooltip: languageService.getTranslation('theme.tooltips.layout'),
+        labelPosition: "top",
+        css: "required-field",
+        required: true,
         options: [
           { id: "standard", value: languageService.getTranslation('theme.layouts.standard') },
           { id: "compact", value: languageService.getTranslation('theme.layouts.compact') },
@@ -78,7 +84,8 @@ const ThemeForm = () => {
         view: "checkbox",
         name: "animations",
         label: languageService.getTranslation('theme.animations'),
-        tooltip: languageService.getTranslation('theme.tooltips.animations'),
+        css: "required-field",
+        required: true,
         value: true,
         responsive: true,
         on: {
@@ -93,7 +100,6 @@ const ThemeForm = () => {
         view: "checkbox",
         name: "compactMode",
         label: languageService.getTranslation('theme.compactMode'),
-        tooltip: languageService.getTranslation('theme.tooltips.compactMode'),
         responsive: true,
         on: {
           onChange: function(newVal, oldVal) {
@@ -169,6 +175,12 @@ const ThemeForm = () => {
         ]
       }
     ],
+    rules: {
+      colorScheme: webix.rules.isNotEmpty,
+      fontSize: webix.rules.isNotEmpty,
+      layout: webix.rules.isNotEmpty,
+      animations: webix.rules.isNotEmpty
+    },
     on: {
       onShow: function() {
         // Load theme data when form is shown

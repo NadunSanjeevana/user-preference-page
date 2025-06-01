@@ -155,4 +155,20 @@
 .webix_button.webix_icon_button .webix_icon {
   font-size: 24px !important;
   line-height: 1 !important;
+}
+
+/* Required field styles */
+.required-field::after {
+  content: "*";
+  color: #ff0000;
+  margin-left: 4px;
+}
+
+.required-field.webix_inp_label {
+  font-weight: 500;
+}
+
+/* Dark theme support for required fields */
+.webix_dark .required-field::after {
+  color: #ff6b6b;
 } 
