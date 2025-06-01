@@ -18,17 +18,14 @@ class RegisterView(APIView):
 
     def post(self, request):
         try:
-            # Validate password
             validate_password(request.data.get('password'))
             
-            # Create user
             user = User.objects.create_user(
                 username=request.data.get('username'),
                 email=request.data.get('email'),
                 password=request.data.get('password')
             )
             
-            # Create default preferences
             UserPreferences.objects.create(
                 user=user,
                 account={
@@ -87,7 +84,6 @@ class UserPreferencesViewSet(viewsets.ModelViewSet):
         return get_object_or_404(UserPreferences, user=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        # Check if preferences already exist
         if UserPreferences.objects.filter(user=request.user).exists():
             return Response(
                 {"detail": "Preferences already exist for this user."},
@@ -110,7 +106,6 @@ class UserPreferencesViewSet(viewsets.ModelViewSet):
     def my_preferences(self, request):
         preferences = UserPreferences.objects.filter(user=request.user).first()
         if not preferences:
-            # Create default preferences if they don't exist
             preferences = UserPreferences.objects.create(
                 user=request.user,
                 account={
@@ -157,9 +152,6 @@ class UserPreferencesViewSet(viewsets.ModelViewSet):
 @api_view(['PUT'])
 @permission_classes([permissions.IsAuthenticated])
 def update_password(request):
-    """
-    Update user password
-    """
     try:
         print("Received password update request")
         print("Request data:", request.data)
@@ -178,7 +170,6 @@ def update_password(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Verify current password
         if not request.user.check_password(current_password):
             print("Current password verification failed")
             return Response(
@@ -186,7 +177,6 @@ def update_password(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Validate new password
         try:
             validate_password(new_password, request.user)
         except ValidationError as e:
@@ -196,11 +186,9 @@ def update_password(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Update password
         request.user.set_password(new_password)
         request.user.save()
         
-        # Invalidate all existing tokens
         RefreshToken.for_user(request.user)
         
         print("Password updated successfully")
