@@ -8,9 +8,8 @@ body {
 }
 
 .preferences-container {
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -19,47 +18,46 @@ body {
 
 .header-section {
   text-align: center;
-  margin-bottom: 30px;
-  padding: 20px 0;
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
   border-bottom: 2px solid #f0f0f0;
 }
 
 .header-title {
-  font-size: 2.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 10px;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
 .header-subtitle {
   color: #666;
-  font-size: 1.2rem;
   font-weight: 300;
+  line-height: 1.4;
 }
 
 /* Form Styles */
 .webix_form .webix_form_section {
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
 }
 
 .webix_form_section .webix_form_section_label {
   font-weight: 600;
   color: #333;
-  font-size: 1.1rem;
-  padding: 10px 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid #e0e0e0;
-  margin-bottom: 15px;
+  margin-bottom: 0.75rem;
 }
 
 /* Message Styles */
 .success-message {
   background: linear-gradient(135deg, #4caf50, #45a049);
   color: white;
-  padding: 15px;
+  padding: 0.75rem;
   border-radius: 8px;
-  margin: 10px 0;
+  margin: 0.5rem 0;
   text-align: center;
   font-weight: 500;
   box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
@@ -68,9 +66,9 @@ body {
 .error-message {
   background: linear-gradient(135deg, #f44336, #d32f2f);
   color: white;
-  padding: 15px;
+  padding: 0.75rem;
   border-radius: 8px;
-  margin: 10px 0;
+  margin: 0.5rem 0;
   text-align: center;
   font-weight: 500;
   box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
@@ -78,10 +76,8 @@ body {
 
 /* Theme Preview */
 .theme-preview {
-  width: 100%;
-  height: 60px;
   border-radius: 8px;
-  margin: 10px 0;
+  margin: 0.5rem 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,51 +86,161 @@ body {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .preferences-container {
-    margin: 10px;
-    padding: 15px;
-    border-radius: 10px;
-  }
-
-  .header-title {
-    font-size: 2rem;
-  }
-
-  .header-subtitle {
-    font-size: 1rem;
-  }
+/* Layout Fix for Content Overflow */
+.preferences-layout {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
-/* Accessibility */
+.preferences-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  min-width: 0;
+}
+
+.preferences-main {
+  width: 100%;
+}
+
+/* Form Row Layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-col {
+  flex: 1;
+}
+
+.form-col-full {
+  width: 100%;
+}
+
+/* Button Row Layout */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: flex-start;
+}
+
+.button-item {
+  flex: 0 1 auto;
+}
+
+/* Focus States */
 .webix_control:focus {
-  outline: 2px solid #667eea !important;
-  outline-offset: 2px !important;
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
 }
 
 .webix_button:focus {
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
 }
 
-/* High Contrast Support */
+/* High Contrast Mode */
 @media (prefers-contrast: high) {
   .preferences-container {
-    background: white;
     border: 2px solid #000;
   }
-
+  
   .header-title {
-    color: #000;
     -webkit-text-fill-color: #000;
   }
 }
 
-/* Reduced Motion Support */
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-} 
+}
+
+/* Touch Devices */
+@media (hover: none) and (pointer: coarse) {
+  .webix_button {
+    padding: 0.75rem;
+  }
+  
+  .success-message,
+  .error-message {
+    padding: 1rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: none;
+  }
+  
+  .preferences-container {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .header-title {
+    -webkit-text-fill-color: #000;
+  }
+}
+
+.language-selector {
+  margin-right: 1rem;
+}
+
+.language-selector .webix_select {
+  min-width: 120px;
+}
+
+/* Tooltip styles */
+.webix_tooltip {
+  max-width: 300px;
+  padding: 0.75rem;
+  background-color: var(--tooltip-bg, #333);
+  color: var(--tooltip-text, #fff);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Dark theme tooltip */
+[data-theme="dark"] .webix_tooltip {
+  --tooltip-bg: #444;
+  --tooltip-text: #fff;
+}
+
+/* Light theme tooltip */
+[data-theme="light"] .webix_tooltip {
+  --tooltip-bg: #333;
+  --tooltip-text: #fff;
+}
+
+/* Accessibility focus styles */
+.language-selector .webix_select:focus {
+  outline: 2px solid var(--focus-color, #4a90e2);
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .language-selector {
+    margin-right: 0.5rem;
+  }
+  
+  .language-selector .webix_select {
+    min-width: 100px;
+  }
+}
