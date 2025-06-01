@@ -11,6 +11,44 @@ const languages = {
     logout: "Logout",
     changePassword: "Change Password",
     delete: "Delete",
+    login: "Login",
+    register: "Register",
+    preferences: {
+      title: "User Preferences"
+    },
+    
+    // Login
+    login: {
+      title: "Login",
+      username: "Username",
+      password: "Password",
+      rememberMe: "Remember Me",
+      forgotPassword: "Forgot Password?",
+      noAccount: "Don't have an account?",
+      signUp: "Sign Up",
+      tooltips: {
+        username: "Enter your username or email",
+        password: "Enter your password"
+      }
+    },
+
+    // Register
+    register: {
+      title: "Register",
+      username: "Username",
+      email: "Email",
+      password: "Password",
+      confirmPassword: "Confirm Password",
+      agreeTerms: "I agree to the Terms and Conditions",
+      haveAccount: "Already have an account?",
+      signIn: "Sign In",
+      tooltips: {
+        username: "Choose a unique username (3-20 characters)",
+        email: "Enter a valid email address",
+        password: "Password must be at least 8 characters",
+        confirmPassword: "Re-enter your password"
+      }
+    },
     
     // Account Settings
     account: {
@@ -141,7 +179,42 @@ const languages = {
     logout: "Cerrar Sesión",
     changePassword: "Cambiar Contraseña",
     delete: "Eliminar",
+    login: "Iniciar Sesión",
+    register: "Registrarse",
     
+    // Login
+    login: {
+      title: "Iniciar Sesión",
+      username: "Nombre de Usuario",
+      password: "Contraseña",
+      rememberMe: "Recordarme",
+      forgotPassword: "¿Olvidó su contraseña?",
+      noAccount: "¿No tienes una cuenta?",
+      signUp: "Registrarse",
+      tooltips: {
+        username: "Ingrese su nombre de usuario o correo electrónico",
+        password: "Ingrese su contraseña"
+      }
+    },
+
+    // Register
+    register: {
+      title: "Registrarse",
+      username: "Nombre de Usuario",
+      email: "Correo Electrónico",
+      password: "Contraseña",
+      confirmPassword: "Confirmar Contraseña",
+      agreeTerms: "Acepto los Términos y Condiciones",
+      haveAccount: "¿Ya tienes una cuenta?",
+      signIn: "Iniciar Sesión",
+      tooltips: {
+        username: "Elija un nombre de usuario único (3-20 caracteres)",
+        email: "Ingrese una dirección de correo electrónico válida",
+        password: "La contraseña debe tener al menos 8 caracteres",
+        confirmPassword: "Vuelva a ingresar su contraseña"
+      }
+    },
+
     // Account Settings
     account: {
       title: "Configuración de Cuenta",

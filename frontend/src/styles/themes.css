@@ -1,0 +1,142 @@
+/* Dark theme form styles */
+.webix_dark_form {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_label {
+  color: var(--webix-form-text, #ffffff) !important;
+}
+
+.webix_dark_form .webix_input {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_input:focus {
+  border-color: var(--primary-color, #2196F3) !important;
+}
+
+.webix_dark_form .webix_el_text input,
+.webix_dark_form .webix_el_textarea textarea,
+.webix_dark_form .webix_el_richselect input,
+.webix_dark_form .webix_el_combo input,
+.webix_dark_form .webix_el_datepicker input {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_el_checkbox .webix_checkbox,
+.webix_dark_form .webix_el_radio .webix_radio {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_el_checkbox .webix_checkbox:checked,
+.webix_dark_form .webix_el_radio .webix_radio:checked {
+  background-color: var(--primary-color, #2196F3) !important;
+  border-color: var(--primary-color, #2196F3) !important;
+}
+
+.webix_dark_form .webix_el_button .webix_button {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_el_button .webix_button:hover {
+  background-color: var(--primary-color, #2196F3) !important;
+  color: #ffffff !important;
+}
+
+.webix_dark_form .webix_el_button .webix_button.webix_primary {
+  background-color: var(--primary-color, #2196F3) !important;
+  color: #ffffff !important;
+}
+
+.webix_dark_form .webix_el_button .webix_button.webix_primary:hover {
+  background-color: var(--primary-color-dark, #1976D2) !important;
+}
+
+.webix_dark_form .webix_el_button .webix_button.webix_secondary {
+  background-color: transparent !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_el_button .webix_button.webix_secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark theme select and dropdown styles */
+.webix_dark_form .webix_el_richselect .webix_select,
+.webix_dark_form .webix_el_combo .webix_select {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_el_richselect .webix_select:hover,
+.webix_dark_form .webix_el_combo .webix_select:hover {
+  border-color: var(--primary-color, #2196F3) !important;
+}
+
+.webix_dark_form .webix_list {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_list_item {
+  color: var(--webix-form-text, #ffffff) !important;
+}
+
+.webix_dark_form .webix_list_item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.webix_dark_form .webix_list_item.webix_selected {
+  background-color: var(--primary-color, #2196F3) !important;
+  color: #ffffff !important;
+}
+
+/* Dark theme section styles */
+.webix_dark_form .webix_section {
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+/* Dark theme tooltip styles */
+.webix_dark_form .webix_tooltip {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+/* Dark theme message styles */
+.webix_dark_form .webix_message {
+  background-color: var(--webix-form-background, #2d2d2d) !important;
+  color: var(--webix-form-text, #ffffff) !important;
+  border-color: var(--webix-form-border, #404040) !important;
+}
+
+.webix_dark_form .webix_message.webix_error {
+  background-color: rgba(244, 67, 54, 0.1) !important;
+  color: #f44336 !important;
+  border-color: #f44336 !important;
+}
+
+.webix_dark_form .webix_message.webix_success {
+  background-color: rgba(76, 175, 80, 0.1) !important;
+  color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+.webix_dark_form .webix_message.webix_info {
+  background-color: rgba(33, 150, 243, 0.1) !important;
+  color: #2196f3 !important;
+  border-color: #2196f3 !important;
+} 

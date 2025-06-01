@@ -12,6 +12,7 @@ class StateManager {
       error: null
     };
     this.listeners = [];
+    this.themeListeners = [];
   }
 
   // Subscribe to state changes
@@ -24,14 +25,40 @@ class StateManager {
     };
   }
 
+  // Subscribe to theme changes specifically
+  subscribeToTheme(listener) {
+    this.themeListeners.push(listener);
+    // Immediately notify with current theme
+    if (this.state.theme) {
+      listener(this.state.theme);
+    }
+    return () => {
+      this.themeListeners = this.themeListeners.filter(l => l !== listener);
+    };
+  }
+
   // Notify all listeners
   notify() {
     this.listeners.forEach(listener => listener(this.state));
   }
 
+  // Notify theme listeners
+  notifyThemeListeners() {
+    if (this.state.theme) {
+      this.themeListeners.forEach(listener => listener(this.state.theme));
+    }
+  }
+
   // Update state and notify listeners
   setState(newState) {
+    const oldTheme = this.state.theme;
     this.state = { ...this.state, ...newState };
+    
+    // If theme has changed, notify theme listeners
+    if (newState.theme && JSON.stringify(oldTheme) !== JSON.stringify(newState.theme)) {
+      this.notifyThemeListeners();
+    }
+    
     this.notify();
   }
 
@@ -79,10 +106,20 @@ class StateManager {
     try {
       this.setState({ loading: true, error: null });
       const response = await this.apiService.updatePreferences({ [type]: data });
-      this.setState({
-        [type]: response[type],
-        loading: false
-      });
+      
+      // Update state and trigger appropriate notifications
+      if (type === 'theme') {
+        this.setState({
+          theme: response.theme,
+          loading: false
+        });
+      } else {
+        this.setState({
+          [type]: response[type],
+          loading: false
+        });
+      }
+      
       return response;
     } catch (error) {
       this.setState({ error: error.message, loading: false });

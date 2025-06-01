@@ -1,5 +1,5 @@
 import stateManager from '../../utils/stateManager.js';
-import Validator from '../../utils/validator.js';
+import Validator from '../../utils/validation.js';
 import languageService from '../../services/languageService.js';
 
 const AccountForm = () => {
