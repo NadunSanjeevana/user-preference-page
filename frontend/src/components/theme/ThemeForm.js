@@ -17,18 +17,6 @@ const ThemeForm = () => {
           { id: "auto", value: "Auto" }
         ],
         value: "light",
-        responsive: true,
-        on: {
-          onChange: function(newValue) {
-            updateThemePreview(newValue);
-          }
-        }
-      },
-      {
-        view: "template",
-        id: "themePreview",
-        template: '<div class="theme-preview theme-light">Theme Preview - Light Mode</div>',
-        height: 80,
         responsive: true
       },
       {
@@ -99,7 +87,6 @@ const ThemeForm = () => {
         const themeData = stateManager.state.theme;
         if (themeData) {
           this.setValues(themeData);
-          updateThemePreview(themeData.colorScheme);
         }
       }
     }
@@ -110,20 +97,11 @@ const ThemeForm = () => {
     const form = $$("themeForm");
     if (form && state.theme) {
       form.setValues(state.theme);
-      updateThemePreview(state.theme.colorScheme);
     }
   });
 
   return form;
 };
-
-// Helper function to update theme preview
-function updateThemePreview(colorScheme) {
-  const preview = $$("themePreview");
-  if (preview) {
-    preview.setHTML(`<div class="theme-preview theme-${colorScheme}">Theme Preview - ${colorScheme} Mode</div>`);
-  }
-}
 
 // Helper function to apply theme settings
 function applyThemeSettings(settings) {

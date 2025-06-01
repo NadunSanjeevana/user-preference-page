@@ -1,40 +1,162 @@
-/* Dark Theme */
+/* Dark Theme Variables */
 [data-theme="dark"] {
-  --primary-color: #764ba2;
-  --secondary-color: #667eea;
-  --background-color: #1a1a1a;
+  --primary-color: #9b4dca;  /* Purple */
+  --secondary-color: #6a1b9a; /* Darker Purple */
+  --background-color: #121212; /* Darker background */
+  --surface-color: #1e1e1e;   /* Slightly lighter than background */
   --text-color: #ffffff;
-  --accent-color: #45a049;
+  --text-secondary: #e0e0e0;
+  --accent-color: #9b4dca;
   --border-color: #333333;
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
+/* Base Dark Theme Styles */
 [data-theme="dark"] body {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: var(--background-color);
   color: var(--text-color);
 }
 
 [data-theme="dark"] .preferences-container {
-  background: rgba(26, 26, 26, 0.95);
+  background: var(--surface-color);
   box-shadow: 0 20px 40px var(--shadow-color);
 }
 
 [data-theme="dark"] .header-title {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-color);
+  font-weight: 600;
 }
 
 [data-theme="dark"] .header-subtitle {
-  color: #cccccc;
+  color: var(--text-secondary);
+}
+
+/* Webix Dark Theme Styles */
+body.webix_dark {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.webix_dark {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+}
+
+.webix_dark .webix_input,
+.webix_dark .webix_el_text input,
+.webix_dark .webix_el_select select,
+.webix_dark .webix_el_textarea textarea {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.webix_dark .webix_input:focus,
+.webix_dark .webix_el_text input:focus,
+.webix_dark .webix_el_select select:focus,
+.webix_dark .webix_el_textarea textarea:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(155, 77, 202, 0.3) !important;
+}
+
+.webix_dark .webix_label,
+.webix_dark .webix_form_label {
+  color: var(--text-color) !important;
+}
+
+.webix_dark .webix_form_section,
+.webix_dark .webix_fieldset {
+  background-color: var(--surface-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.webix_dark .webix_toolbar {
+  background-color: var(--surface-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.webix_dark .webix_sidebar {
+  background-color: var(--surface-color) !important;
+}
+
+.webix_dark .webix_list_item,
+.webix_dark .webix_tree_item {
+  color: var(--text-color) !important;
+  background-color: transparent !important;
+}
+
+.webix_dark .webix_list_item:hover,
+.webix_dark .webix_tree_item:hover {
+  background-color: rgba(155, 77, 202, 0.1) !important;
+}
+
+.webix_dark .webix_selected,
+.webix_dark .webix_list_item.webix_selected {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+}
+
+.webix_dark .webix_button {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.webix_dark .webix_button:hover {
+  background-color: rgba(155, 77, 202, 0.1) !important;
+}
+
+.webix_dark .webix_primary {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+  font-weight: 500 !important;
+}
+
+.webix_dark .webix_primary:hover {
+  background-color: var(--secondary-color) !important;
+}
+
+.webix_dark .webix_secondary {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--primary-color) !important;
+}
+
+.webix_dark .webix_secondary:hover {
+  background-color: rgba(155, 77, 202, 0.1) !important;
+}
+
+.webix_dark .webix_scrollview {
+  background-color: var(--surface-color) !important;
+}
+
+.webix_dark .webix_multiview {
+  background-color: var(--surface-color) !important;
+}
+
+.webix_dark .webix_layout {
+  background-color: var(--surface-color) !important;
+}
+
+/* Checkbox and Radio Styling */
+.webix_dark .webix_el_checkbox input[type="checkbox"],
+.webix_dark .webix_el_radio input[type="radio"] {
+  background-color: var(--background-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.webix_dark .webix_el_checkbox input[type="checkbox"]:checked,
+.webix_dark .webix_el_radio input[type="radio"]:checked {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Animation Controls */
+[data-theme="dark"] * {
+  transition: var(--animation-duration, 300ms) ease;
 }
 
 [data-theme="dark"] .webix_form_section .webix_form_section_label {
   color: var(--text-color);
   border-bottom: 1px solid var(--border-color);
-}
-
-[data-theme="dark"] .theme-preview.theme-dark {
-  background: linear-gradient(135deg, #343a40, #212529);
-  color: var(--text-color);
 } 

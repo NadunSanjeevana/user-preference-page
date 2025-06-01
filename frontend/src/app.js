@@ -99,40 +99,6 @@ const registerForm = Register({
   }
 });
 
-// Create action buttons component
-const actionButtons = {
-  view: "toolbar",
-  css: "account-buttons",
-  elements: [
-    {
-      view: "button",
-      value: "Save All",
-      css: "webix_primary account-button",
-      click: function() {
-        saveAllPreferences();
-      }
-    },
-    {
-      view: "button", 
-      value: "Reset All",
-      css: "webix_secondary account-button",
-      click: function() {
-        if (confirm("Are you sure you want to reset all preferences to default values?")) {
-          resetAllForms();
-        }
-      }
-    },
-    {
-      view: "button",
-      value: "Change Password", 
-      css: "webix_change-password account-button",
-      click: function() {
-        webix.message("Change password functionality would go here");
-      }
-    }
-  ]
-};
-
 // Main application layout
 const mainLayout = {
   view: "layout",
@@ -416,33 +382,175 @@ function showUnauthenticatedView(viewName = "login") {
   }
 }
 
+// UPDATED: Apply theme settings with proper dark theme support
+function applyThemeSettings() {
+  const theme = appState.data.theme;
+  
+  // Set theme class on document root
+  document.documentElement.setAttribute("data-theme", theme.colorScheme);
+  
+  // Apply font size
+  const fontSizes = {
+    small: "14px",
+    medium: "16px",
+    large: "18px",
+    "extra-large": "20px"
+  };
+  document.body.style.fontSize = fontSizes[theme.fontSize] || "16px";
+
+  // Apply animations
+  if (!theme.animations) {
+    document.body.style.setProperty("--animation-duration", "0ms");
+  } else {
+    document.body.style.removeProperty("--animation-duration");
+  }
+
+  // Apply compact mode
+  document.body.classList.toggle("compact-mode", theme.compactMode);
+
+  // FIXED: Update Webix skin with correct skin name
+  let targetScheme = theme.colorScheme;
+  if (theme.colorScheme === "auto") {
+    targetScheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  if (targetScheme === "dark") {
+    webix.skin.set("dark");
+  } else {
+    webix.skin.set("material");
+  }
+
+  // FIXED: Apply dark theme to body for global styling
+  const isDark = targetScheme === "dark";
+  document.body.classList.toggle("webix_dark", isDark);
+
+  // FIXED: Update main components with proper dark theme classes
+  updateComponentStyling(isDark);
+
+  // FIXED: Update form styling more systematically
+  updateFormStyling(isDark);
+
+  // Update theme preview
+  updateThemePreview(theme.colorScheme);
+  
+  // FIXED: Force refresh of all Webix components
+  refreshWebixComponents(isDark);
+
+  // Handle auto theme system changes
+  if (theme.colorScheme === "auto") {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.removeListener(handleSystemThemeChange); // Remove existing listener
+    mediaQuery.addListener(handleSystemThemeChange);
+  }
+}
+
+// NEW: Handle system theme changes for auto mode
+function handleSystemThemeChange(e) {
+  if (appState.data.theme.colorScheme === "auto") {
+    applyThemeSettings();
+  }
+}
+
+// NEW: Update main component styling
+function updateComponentStyling(isDark) {
+  // Update sidebar
+  const sidebar = $$("mainSidebar");
+  if (sidebar && sidebar.$view) {
+    sidebar.$view.classList.toggle("webix_dark", isDark);
+  }
+
+  // Update action buttons toolbar
+  const actionButtons = $$("actionButtons");
+  if (actionButtons && actionButtons.$view) {
+    actionButtons.$view.classList.toggle("webix_dark", isDark);
+  }
+
+  // Update main view container
+  const mainView = $$("mainView");
+  if (mainView && mainView.$view) {
+    mainView.$view.classList.toggle("webix_dark", isDark);
+  }
+
+  // Update all toolbars in the main view
+  const toolbars = document.querySelectorAll(".webix_toolbar");
+  toolbars.forEach(toolbar => {
+    toolbar.classList.toggle("webix_dark", isDark);
+  });
+
+  // Update scrollviews
+  const scrollviews = document.querySelectorAll(".webix_scrollview");
+  scrollviews.forEach(scrollview => {
+    scrollview.classList.toggle("webix_dark", isDark);
+  });
+}
+
+// NEW: Systematic form styling update
+function updateFormStyling(isDark) {
+  const forms = ["accountForm", "notificationForm", "themeForm", "privacyForm"];
+  
+  forms.forEach(formId => {
+    const form = $$(formId);
+    if (form && form.$view) {
+      // Apply dark theme to form container
+      form.$view.classList.toggle("webix_dark", isDark);
+      
+      // Update all form elements
+      const elements = form.$view.querySelectorAll([
+        ".webix_input",
+        ".webix_el_text",
+        ".webix_el_select", 
+        ".webix_el_checkbox",
+        ".webix_el_radio",
+        ".webix_el_textarea",
+        ".webix_label",
+        ".webix_form_section",
+        ".webix_fieldset",
+        ".webix_button",
+        ".webix_control"
+      ].join(", "));
+      
+      elements.forEach(element => {
+        element.classList.toggle("webix_dark", isDark);
+      });
+    }
+  });
+}
+
+// NEW: Force refresh of Webix components
+function refreshWebixComponents(isDark) {
+  // Get all Webix views and update them
+  const views = webix.$$("*");
+  if (views && views.length) {
+    views.forEach(function(view) {
+      if (view && view.$view) {
+        // Apply dark theme class
+        view.$view.classList.toggle("webix_dark", isDark);
+        
+        // Force refresh for certain component types
+        if (view.refresh && typeof view.refresh === 'function') {
+          try {
+            view.refresh();
+          } catch (e) {
+            console.warn("Could not refresh component:", e);
+          }
+        }
+        
+        // Special handling for specific components
+        if (view.name === "sidebar" || view.name === "toolbar" || view.name === "button") {
+          view.$view.classList.toggle("webix_dark", isDark);
+        }
+      }
+    });
+  }
+}
+
 // Initialize the application
 webix.ready(function() {
   console.log("Webix is ready");
 
-  // Add loading indicator
-  webix.ui({
-    view: "window",
-    id: "loadingWindow",
-    position: "center",
-    modal: true,
-    head: false,
-    body: {
-      view: "template",
-      template: `
-        <div style="text-align: center; padding: 20px;">
-          <div class="loading-spinner"></div>
-          <div style="margin-top: 15px; font-size: 16px;">Loading...</div>
-        </div>
-      `,
-      css: "loading-template"
-    },
-    hidden: true
-  });
-
-
-  // Add loading spinner styles
+  // UPDATED: Add comprehensive dark theme CSS styles
   webix.html.addStyle(`
+    /* Loading spinner styles */
     .loading-spinner {
       width: 50px;
       height: 50px;
@@ -463,7 +571,183 @@ webix.ready(function() {
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+    
+    /* COMPREHENSIVE DARK THEME STYLES */
+    body.webix_dark {
+      background-color: #2c3e50 !important;
+      color: #ecf0f1 !important;
+    }
+    
+    .webix_dark {
+      background-color: #34495e !important;
+      color: #ecf0f1 !important;
+    }
+    
+    .webix_dark .webix_input,
+    .webix_dark .webix_el_text input,
+    .webix_dark .webix_el_select select,
+    .webix_dark .webix_el_textarea textarea {
+      background-color: #2c3e50 !important;
+      color: #ecf0f1 !important;
+      border-color: #7f8c8d !important;
+    }
+    
+    .webix_dark .webix_input:focus,
+    .webix_dark .webix_el_text input:focus,
+    .webix_dark .webix_el_select select:focus,
+    .webix_dark .webix_el_textarea textarea:focus {
+      border-color: #3498db !important;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.5) !important;
+    }
+    
+    .webix_dark .webix_label,
+    .webix_dark .webix_form_label {
+      color: #ecf0f1 !important;
+    }
+    
+    .webix_dark .webix_form_section,
+    .webix_dark .webix_fieldset {
+      background-color: #34495e !important;
+      border-color: #7f8c8d !important;
+    }
+    
+    .webix_dark .webix_toolbar {
+      background-color: #2c3e50 !important;
+      border-color: #7f8c8d !important;
+    }
+    
+    .webix_dark .webix_sidebar {
+      background-color: #2c3e50 !important;
+    }
+    
+    .webix_dark .webix_list_item,
+    .webix_dark .webix_tree_item {
+      color: #ecf0f1 !important;
+      background-color: transparent !important;
+    }
+    
+    .webix_dark .webix_list_item:hover,
+    .webix_dark .webix_tree_item:hover {
+      background-color: #3498db !important;
+    }
+    
+    .webix_dark .webix_selected,
+    .webix_dark .webix_list_item.webix_selected {
+      background-color: #3498db !important;
+      color: #ffffff !important;
+    }
+    
+    .webix_dark .webix_button {
+      background-color: #34495e !important;
+      color: #ecf0f1 !important;
+      border-color: #7f8c8d !important;
+    }
+    
+    .webix_dark .webix_button:hover {
+      background-color: #3498db !important;
+    }
+    
+    .webix_dark .webix_primary {
+      background-color: #3498db !important;
+      color: #ffffff !important;
+    }
+    
+    .webix_dark .webix_secondary {
+      background-color: #95a5a6 !important;
+      color: #2c3e50 !important;
+    }
+    
+    .webix_dark .webix_scrollview {
+      background-color: #34495e !important;
+    }
+    
+    .webix_dark .webix_multiview {
+      background-color: #34495e !important;
+    }
+    
+    .webix_dark .webix_layout {
+      background-color: #34495e !important;
+    }
+    
+    /* Checkbox and radio styling */
+    .webix_dark .webix_el_checkbox input[type="checkbox"],
+    .webix_dark .webix_el_radio input[type="radio"] {
+      background-color: #2c3e50 !important;
+      border-color: #7f8c8d !important;
+    }
+    
+    .webix_dark .webix_el_checkbox input[type="checkbox"]:checked,
+    .webix_dark .webix_el_radio input[type="radio"]:checked {
+      background-color: #3498db !important;
+      border-color: #3498db !important;
+    }
+    
+    /* Theme preview styles */
+    .theme-preview {
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      margin: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .theme-preview.theme-light {
+      background-color: #ffffff;
+      color: #2c3e50;
+      border: 2px solid #ecf0f1;
+    }
+    
+    .theme-preview.theme-dark {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      border: 2px solid #7f8c8d;
+    }
+    
+    /* Compact mode styles */
+    body.compact-mode .webix_view {
+      padding: 5px !important;
+    }
+    
+    body.compact-mode .webix_input {
+      padding: 5px !important;
+      height: 30px !important;
+    }
+    
+    body.compact-mode .webix_button {
+      height: 30px !important;
+      padding: 5px 10px !important;
+    }
+    
+    /* Animation controls */
+    [data-theme="light"] * {
+      transition: var(--animation-duration, 300ms) ease;
+    }
+    
+    [data-theme="dark"] * {
+      transition: var(--animation-duration, 300ms) ease;
+    }
   `);
+
+  // Add loading indicator
+  webix.ui({
+    view: "window",
+    id: "loadingWindow",
+    position: "center",
+    modal: true,
+    head: false,
+    body: {
+      view: "template",
+      template: `
+        <div style="text-align: center; padding: 20px;">
+          <div class="loading-spinner"></div>
+          <div style="margin-top: 15px; font-size: 16px;">Loading...</div>
+        </div>
+      `,
+      css: "loading-template"
+    },
+    hidden: true
+  });
 
   // Create the main layout
   webix.ui(mainLayout, "preferences-app");
@@ -514,11 +798,14 @@ webix.ready(function() {
     setupFormHandlers();
     setupKeyboardNavigation();
     enhanceAccessibility();
+    
+    // ADDED: Apply initial theme
+    applyThemeSettings();
 
-  }, 500); // Increased timeout to ensure components are ready
+  }, 500);
 });
 
-// Load user preferences
+// UPDATED: Load user preferences with theme application
 function loadUserPreferences() {
   stateManager.loadUserPreferences()
     .then(preferences => {
@@ -527,6 +814,8 @@ function loadUserPreferences() {
         appState.originalData = JSON.parse(JSON.stringify(preferences));
       }
       loadFormData();
+      // ADDED: Apply theme after loading preferences
+      applyThemeSettings();
     })
     .catch(error => {
       console.error('Failed to load preferences:', error);
@@ -536,17 +825,24 @@ function loadUserPreferences() {
         expire: 5000
       });
       loadFormData();
+      // ADDED: Apply default theme
+      applyThemeSettings();
     });
 }
 
-// Form event handlers
+// UPDATED: Form event handlers with theme change detection
 function setupFormHandlers() {
   const forms = ["accountForm", "notificationForm", "themeForm", "privacyForm"];
   forms.forEach(formId => {
     const form = $$(formId);
     if (form && form.attachEvent) {
-      form.attachEvent("onChange", function() {
+      form.attachEvent("onChange", function(newValue, oldValue, config) {
         updateStateFromForms();
+        
+        // If theme form changed, apply theme immediately
+        if (formId === "themeForm") {
+          applyThemeSettings();
+        }
       });
     } else {
       console.warn(`Form ${formId} not found or doesn't support attachEvent`);
@@ -649,9 +945,10 @@ function resetAllForms() {
   const defaultState = new PreferencesState();
   appState.data = JSON.parse(JSON.stringify(defaultState.data));
   loadFormData();
+  applyThemeSettings();
 }
 
-// Update theme preview
+// UPDATED: Update theme preview with proper handling
 function updateThemePreview(colorScheme) {
   const preview = $$("themePreview");
   if (!preview) return;
@@ -665,36 +962,15 @@ function updateThemePreview(colorScheme) {
       text = "Theme Preview - Dark Mode";
       break;
     case "auto":
-      className = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "theme-dark"
-        : "theme-light";
-      text = "Theme Preview - Auto Mode";
+      const isDarkAuto = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      className = isDarkAuto ? "theme-dark" : "theme-light";
+      text = `Theme Preview - Auto Mode (${isDarkAuto ? 'Dark' : 'Light'})`;
       break;
   }
 
   preview.setHTML(`<div class="theme-preview ${className}">${text}</div>`);
 }
 
-// Apply theme settings
-function applyThemeSettings() {
-  const theme = appState.data.theme;
-  document.documentElement.setAttribute("data-theme", theme.colorScheme);
-
-  const fontSizes = {
-    small: "14px",
-    medium: "16px",
-    large: "18px",
-    "extra-large": "20px"
-  };
-
-  document.body.style.fontSize = fontSizes[theme.fontSize] || "16px";
-
-  if (!theme.animations) {
-    document.body.style.setProperty("--animation-duration", "0ms");
-  } else {
-    document.body.style.removeProperty("--animation-duration");
-  }
-}
 
 // Setup keyboard navigation
 function setupKeyboardNavigation() {
