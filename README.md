@@ -1,13 +1,12 @@
 # User Preference Management System
 
-A full-stack web application for managing user preferences, built with Django and React.
+A full-stack web application for managing user preferences, built with Django and Webix.
 
 ## Project Structure
 
 ```
 .
 ├── backend/           # Django backend
-│   ├── preferences/   # Preferences app
 │   ├── user_preferences/  # Main Django project
 │   └── requirements.txt
 └── frontend/         # React frontend
